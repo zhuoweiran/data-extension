@@ -13,6 +13,7 @@
         <module>data-extension-core</module>
         <module>data-extension-common</module>
         <module>data-extension-util</module>
+        <module>data-extension-job-schedule</module>
     </modules>
     <properties>
         <fastjson.version>1.2.10</fastjson.version>
