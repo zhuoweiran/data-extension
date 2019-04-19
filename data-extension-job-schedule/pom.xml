@@ -25,6 +25,11 @@
 
     <dependencies>
         <!-- child module dependencies-->
+        <dependency>
+            <groupId>cn.csg</groupId>
+            <artifactId>data-extension-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- child module dependencies-->
 
         <!-- spring boot starters -->
