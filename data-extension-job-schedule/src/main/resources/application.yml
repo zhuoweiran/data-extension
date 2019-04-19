@@ -1,3 +1,9 @@
-
 server:
   port: 8082
+spring:
+  data:
+    elasticsearch:
+      cluster-name: es_nfdw
+      cluster-nodes: zdbd01:9300,zdbd02:9300,zdbd03:9300
+      repositories:
+        enable: true

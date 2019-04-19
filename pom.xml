@@ -13,6 +13,7 @@
         <module>data-extension-core</module>
         <module>data-extension-common</module>
         <module>data-extension-util</module>
+        <module>data-extension-feign-client</module>
         <module>data-extension-job-schedule</module>
     </modules>
     <properties>
