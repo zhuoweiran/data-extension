@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.csg</groupId>
+    <artifactId>data-extension</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>data-extension-api</module>
+        <module>data-extension-core</module>
+        <module>data-extension-common</module>
+        <module>data-extension-util</module>
+        <module>data-extension-job-schedule</module>
+    </modules>
+    <properties>
+        <fastjson.version>1.2.10</fastjson.version>
+        <spring.boot.vresion>2.1.0.RELEASE</spring.boot.vresion>
+        <de.version>1.0-SNAPSHOT</de.version>
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArguments>
+                        <XprintProcessorInfo />
+                        <XprintRounds />
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

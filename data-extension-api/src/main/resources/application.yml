@@ -1,0 +1,9 @@
+spring:
+  data:
+    elasticsearch:
+      cluster-name: es_nfdw
+      cluster-nodes: zdbd01:9300
+      repositories:
+        enabled: true
+server:
+  port: 8081
