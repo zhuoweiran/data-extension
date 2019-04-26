@@ -1,17 +1,26 @@
 package cn.csg.jobschedule.service;
 
+import cn.csg.jobschedule.constants.DatetimeConstants;
 import cn.csg.jobschedule.dao.ElasticsearchDao;
+import cn.csg.jobschedule.util.DatetimeUtil;
+import cn.csg.jobschedule.util.ESUtil;
+import cn.csg.jobschedule.util.EsConnectionPool;
+import cn.csg.jobschedule.util.IDUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +54,17 @@ public class MetadataService {
                     Map corpIdCountMap = (Map)aggregationsMap.get("corpIdCount");
                     List<Map> buckets = (List)corpIdCountMap.get("buckets");
                     if(buckets != null && buckets.size() > 0){
+                        String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
+                        String index = "communicationalarm"+date;
+                        String type = "default";
+                        EsConnectionPool esConnectionPool = EsConnectionPool.getInstance("zdbd01,zdbd02,zdbd03",
+                                Integer.parseInt("9300"),"es_nfdw") ;
+                        TransportClient client = esConnectionPool.getClient();
+                        BulkRequestBuilder bulkRequest = client.prepareBulk();
+                        Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+
                         for(Map corpIdGroupMap : buckets){
+
                             String conrpId = corpIdGroupMap.get("key")+"";
                             Map srcIpCountMap = (Map)corpIdGroupMap.get("srcIpCount");
                             List<Map> sumResultBuckets = (List)srcIpCountMap.get("buckets");
@@ -54,11 +73,22 @@ public class MetadataService {
                                     String srcIp = sumResultMap.get("key")+"";
                                     Map doubleCountSumMap = (Map)sumResultMap.get("doubleCountSum");
                                     Double countData = (Double) doubleCountSumMap.get("value");
-                            System.out.println("conrpId="+conrpId+";srcIp="+srcIp+";countData="+countData);
                                     //TODO srcIp在t分钟内发起n次访问 保存到ES
+                                    JSONObject countDataToEsJson = new JSONObject();
+                                    String id = IDUtil.getUUID();
+                                    countDataToEsJson.put("id", id);
+                                    countDataToEsJson.put("conrpId",conrpId);
+                                    countDataToEsJson.put("createTime", createTime);
+                                    countDataToEsJson.put("srcIp",srcIp);
+                                    countDataToEsJson.put("countData",countData);
+                                    countDataToEsJson.put("alarmType","爆发式通信对告警");
+                                    countDataToEsJson.put("alarmLevel","紧急");
+//                                    bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
+//                        ESUtil.saveLastToES(bulkRequest) ;
+                        System.out.println("#####################end#######################");
                     }
 
                 }catch (Exception e){
@@ -80,6 +110,16 @@ public class MetadataService {
                     Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
                     List<Map> buckets = (List) corpIdCountMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
+
+                        String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
+                        String index = "communicationalarm"+date;
+                        String type = "default";
+                        EsConnectionPool esConnectionPool = EsConnectionPool.getInstance("zdbd01,zdbd02,zdbd03",
+                                Integer.parseInt("9300"),"es_nfdw") ;
+                        TransportClient client = esConnectionPool.getClient();
+                        BulkRequestBuilder bulkRequest = client.prepareBulk();
+                        Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+
                         for (Map corpIdGroupMap : buckets) {
                             String conrpId = corpIdGroupMap.get("key") + "";
                             Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
@@ -94,11 +134,24 @@ public class MetadataService {
                                     for (Map destIpMap : destIpCountList) {
                                         destIpList.add(destIpMap.get("key"));
                                     }
-                            System.out.println("conrpId=" + conrpId + ";srcIp=" + srcIp + ";countData=" + countData + ";destIpList=" + destIpList);
+//                            System.out.println("conrpId=" + conrpId + ";srcIp=" + srcIp + ";countData=" + countData + ";destIpList=" + destIpList);
                                     //TODO srcIp在t分钟内访问了n个destIp 入库ES
+                                    JSONObject countDataToEsJson = new JSONObject();
+                                    String id = IDUtil.getUUID();
+                                    countDataToEsJson.put("id", id);
+                                    countDataToEsJson.put("conrpId",conrpId);
+                                    countDataToEsJson.put("createTime", createTime);
+                                    countDataToEsJson.put("srcIp",srcIp);
+                                    countDataToEsJson.put("countData",countData);
+                                    countDataToEsJson.put("destIpList",destIpList);
+                                    countDataToEsJson.put("alarmType","爆发式通信对告警");
+                                    countDataToEsJson.put("alarmLevel","紧急");
+//                                    bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
+//                        ESUtil.saveLastToES(bulkRequest) ;
+                        System.out.println("*******************end********************");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -119,6 +172,15 @@ public class MetadataService {
                     Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
                     List<Map> buckets = (List) corpIdCountMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
+                        String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
+                        String index = "communicationalarm"+date;
+                        String type = "default";
+                        EsConnectionPool esConnectionPool = EsConnectionPool.getInstance("zdbd01,zdbd02,zdbd03",
+                                Integer.parseInt("9300"),"es_nfdw") ;
+                        TransportClient client = esConnectionPool.getClient();
+                        BulkRequestBuilder bulkRequest = client.prepareBulk();
+                        Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+
                         for (Map corpIdGroupMap : buckets) {
                             String conrpId = corpIdGroupMap.get("key") + "";
                             Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
@@ -138,14 +200,28 @@ public class MetadataService {
                                             for(Map destPortMap : destPortBuckets){
                                                 destPortList.add(destPortMap.get("key"));
                                             }
-                                            System.out.println("conrpId="+conrpId+";srcIp="+srcIp+";destIp="+destIp+";countData="+countData+";destPortList="+destPortList);
+//                                            System.out.println("conrpId="+conrpId+";srcIp="+srcIp+";destIp="+destIp+";countData="+countData+";destPortList="+destPortList);
                                             //TODO srcIp在t分钟内访问destIp的n个端口 入库ES
+                                            JSONObject countDataToEsJson = new JSONObject();
+                                            String id = IDUtil.getUUID();
+                                            countDataToEsJson.put("id", id);
+                                            countDataToEsJson.put("conrpId",conrpId);
+                                            countDataToEsJson.put("createTime", createTime);
+                                            countDataToEsJson.put("srcIp",srcIp);
+                                            countDataToEsJson.put("countData",countData);
+                                            countDataToEsJson.put("destIp",destIp);
+                                            countDataToEsJson.put("destPortList",destPortList);
+                                            countDataToEsJson.put("alarmType","爆发式通信对告警");
+                                            countDataToEsJson.put("alarmLevel","紧急");
+//                                            bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                         }
                                     }
 
                                 }
                             }
                         }
+//                        ESUtil.saveLastToES(bulkRequest) ;
+                        System.out.println("-------------------end-------------------");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
