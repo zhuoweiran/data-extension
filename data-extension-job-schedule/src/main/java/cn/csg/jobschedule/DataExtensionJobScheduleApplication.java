@@ -16,8 +16,6 @@ import org.springframework.context.annotation.Bean;
 @EnableFeignClients
 @EntityScan(value = {"cn.csg.common.vo"})
 public class DataExtensionJobScheduleApplication extends SpringBootServletInitializer {
-    @Autowired
-    private ApplicationProperties applicationProperties;
 
     public static void main(String[] args) {
         SpringApplication.run(DataExtensionJobScheduleApplication.class,args);
