@@ -6,6 +6,7 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EnableFeignClients
+@EntityScan(value = "cn.csg.common.vo")
 public class DataExtensionJobScheduleApplication extends SpringBootServletInitializer {
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -21,7 +23,7 @@ public class DataExtensionJobScheduleApplication extends SpringBootServletInitia
         SpringApplication.run(DataExtensionJobScheduleApplication.class,args);
     }
 
-    @Bean
+    /*@Bean
     public JobDetail communicationAlarmJobDetail() {
         return JobBuilder.newJob(CommunicationAlarmJob.class).withIdentity("communicationAlarmJob")
                 .storeDurably().build();
@@ -32,5 +34,5 @@ public class DataExtensionJobScheduleApplication extends SpringBootServletInitia
                 .withSchedule(CronScheduleBuilder.cronSchedule(applicationProperties.getCommunicationAlarmJobCorn())).build();
 
         return cronTrigger;
-    }
+    }*/
 }
