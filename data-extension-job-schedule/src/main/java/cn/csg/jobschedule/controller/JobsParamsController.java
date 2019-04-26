@@ -31,9 +31,10 @@ public class JobsParamsController {
     public ResultData<ExplodeVo> save(
             @RequestBody ExplodeVo explodeVo
     ){
+        explodeService.save(explodeVo);
         System.out.println(explodeVo);
         return new ResultData<>(
-                explodeService.save(explodeVo),
+                null,
                 ResultStatus.initSuccess()
         );
     }
