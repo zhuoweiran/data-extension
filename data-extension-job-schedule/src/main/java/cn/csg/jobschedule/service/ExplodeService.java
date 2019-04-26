@@ -1,13 +1,13 @@
 package cn.csg.jobschedule.service;
 
 import cn.csg.common.vo.ExplodeVo;
+import cn.csg.common.vo.RuleVo;
 import cn.csg.jobschedule.dao.ExplodeDao;
 import cn.csg.jobschedule.dao.RuleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ExplodeService {
@@ -23,17 +23,11 @@ public class ExplodeService {
     }
 
     public ExplodeVo save(ExplodeVo explodeVo){
-        explodeDao.save(explodeVo);
-        ruleDao.saveAll(
-            explodeVo.getRuleVos().stream().map(
-                    ruleVo -> {
-                        ruleVo.setId(ruleDao.findFirstByKey(ruleVo.getKey()).getId());
-                        return ruleVo;
-                    }
-            ).collect(Collectors.toList())
-        );
-
+        List<RuleVo> ruleVos = explodeVo.getRuleVos();
+        for(RuleVo ruleVo : ruleVos){
+            ruleVo.setId(ruleDao.findFirstByKeyAndRule(ruleVo.getKey(),explodeVo.getId()));
+        }
+        ruleDao.saveAll(ruleVos);
         return explodeVo;
     }
-
 }

@@ -3,6 +3,7 @@ package cn.csg.jobschedule.controller;
 import cn.csg.common.ResultData;
 import cn.csg.common.ResultStatus;
 import cn.csg.common.enums.RuleKeyEnum;
+import cn.csg.common.enums.StatusEnum;
 import cn.csg.common.vo.ExplodeVo;
 import cn.csg.common.vo.RuleVo;
 import cn.csg.jobschedule.service.ExplodeService;
@@ -23,7 +24,7 @@ public class JobsParamsController {
     public ResultData<List<ExplodeVo>> getAllExplodes(){
         return new ResultData<>(
                 explodeService.findAll(),
-                ResultStatus.initSuccess()
+                ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
 
@@ -35,7 +36,7 @@ public class JobsParamsController {
         System.out.println(explodeVo);
         return new ResultData<>(
                 null,
-                ResultStatus.initSuccess()
+                ResultStatus.initStatus(StatusEnum.UPDATE)
         );
     }
 
@@ -55,7 +56,7 @@ public class JobsParamsController {
                             )
                         )
                 ),
-                ResultStatus.initSuccess()
+                ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
 }

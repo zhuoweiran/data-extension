@@ -30,10 +30,10 @@ public class ResultStatus {
     public ResultStatus() {
     }
 
-    public static ResultStatus initSuccess() {
+    public static ResultStatus initStatus(StatusEnum statusEnum) {
         return new ResultStatus(
-                StatusEnum.SUCCESS.getStatus(),
-                StatusEnum.SUCCESS.getMsg()
+                statusEnum.getStatus(),
+                statusEnum.getMsg()
         );
     }
 }
