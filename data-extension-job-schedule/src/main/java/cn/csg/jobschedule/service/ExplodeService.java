@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExplodeService {
@@ -23,7 +24,14 @@ public class ExplodeService {
 
     public ExplodeVo save(ExplodeVo explodeVo){
         explodeDao.save(explodeVo);
-        ruleDao.saveAll(explodeVo.getRuleVos());
+        ruleDao.saveAll(
+            explodeVo.getRuleVos().stream().map(
+                    ruleVo -> {
+                        ruleVo.setId(ruleDao.findFirstByKey(ruleVo.getKey()).getId());
+                        return ruleVo;
+                    }
+            ).collect(Collectors.toList())
+        );
 
         return explodeVo;
     }
