@@ -20,17 +20,4 @@ public class DataExtensionJobScheduleApplication extends SpringBootServletInitia
     public static void main(String[] args) {
         SpringApplication.run(DataExtensionJobScheduleApplication.class,args);
     }
-
-    @Bean
-    public JobDetail communicationAlarmJobDetail() {
-        return JobBuilder.newJob(CommunicationAlarmJob.class).withIdentity("communicationAlarmJob")
-                .storeDurably().build();
-    }
-    @Bean
-    public Trigger communicationAlarmJobTrigger() {
-        CronTrigger cronTrigger = TriggerBuilder.newTrigger().forJob(communicationAlarmJobDetail())
-                .withSchedule(CronScheduleBuilder.cronSchedule(applicationProperties.getCommunicationAlarmJobCorn())).build();
-
-        return cronTrigger;
-    }
 }

@@ -7,7 +7,9 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,15 +18,18 @@ import java.util.Date;
  * Created by hjw on 2019-04-22
  * 爆发式通信对告警统计
  */
-public class CommunicationAlarmJob extends QuartzJobBean {
+@Component
+@Configuration
+@EnableScheduling
+public class CommunicationAlarmJob{
 
     private final static Logger logger = LoggerFactory.getLogger(CommunicationAlarmJob.class);
 
     @Autowired
     public MetadataService metadataService;
 
-    @Override
-    protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    protected void executeCommunicationAlarmTask(){
+        System.out.println(new SimpleDateFormat("yyyy-HH-dd MM:hh:ss").format(new Date())+"--------Execute---------");
         //srcIp在t分钟内发起n次访问 start
         String srcIpSumQueryStr = getSrcIpSumQueryStr();
         JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
