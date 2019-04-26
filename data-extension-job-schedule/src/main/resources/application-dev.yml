@@ -1,5 +1,7 @@
 server:
   port: 8082
+  servlet:
+    context-path: /job-schedule
 feign:
   name: escluster
   url: http://172.16.140.153:9200/hjwindex_test
@@ -10,3 +12,12 @@ spring:
       cluster-nodes: zdbd01:9300,zdbd02:9300,zdbd03:9300
       repositories:
         enable: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://172.16.140.152:3306/data_extension?characterEncoding=utf8&useSSL=true
