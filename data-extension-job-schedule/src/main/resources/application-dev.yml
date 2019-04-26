@@ -5,6 +5,13 @@ server:
 feign:
   name: escluster
   url: http://172.16.140.153:9200/hjwindex_test
+escluster:
+  cluster: es_nfdw
+  nodes: zdbd01,zdbd02,zdbd03
+  port: 9300
+  communicationalarm:
+    index: communicationalarm
+    type: default
 spring:
   data:
     elasticsearch:
