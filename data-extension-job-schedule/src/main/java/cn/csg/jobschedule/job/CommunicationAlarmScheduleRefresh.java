@@ -31,7 +31,7 @@ public class CommunicationAlarmScheduleRefresh {
         CronTrigger trigger =(CronTrigger)scheduler.getTrigger(cronTrigger.getKey());
         String oldCron = trigger.getCronExpression();
         //TODO 获取数据库中的cron表达式
-        String searchCron = "0/15 * * * * ?";
+        String searchCron = "0/40 * * * * ?";
         System.out.println("当前定时任务使用的cron表达式:"+oldCron);
         System.out.println("更新后的cron表达式:"+searchCron);
         if (oldCron.equals(searchCron)){

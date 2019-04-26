@@ -29,7 +29,6 @@ public class CommunicationAlarmJob{
     public MetadataService metadataService;
 
     protected void executeCommunicationAlarmTask(){
-        System.out.println(new SimpleDateFormat("yyyy-HH-dd MM:hh:ss").format(new Date())+"--------Execute---------");
         //srcIp在t分钟内发起n次访问 start
         String srcIpSumQueryStr = getSrcIpSumQueryStr();
         JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
