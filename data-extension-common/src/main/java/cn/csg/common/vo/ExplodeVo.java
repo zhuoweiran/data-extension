@@ -1,7 +1,9 @@
 package cn.csg.common.vo;
 
 
+import cn.csg.common.enums.ExplodeType;
 import jdk.nashorn.internal.objects.annotations.Property;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -37,11 +39,32 @@ public class ExplodeVo{
     }
 
     public String getName() {
+        if(StringUtils.isNotEmpty(name)){
+            if(name.equals(ExplodeType.SRC_IP_SUM.getExplode())){
+                this.name = ExplodeType.SRC_IP_SUM.getName();
+            }
+            if(name.equals(ExplodeType.SRC_IP_AND_DEST_IP_COUNT.getExplode())){
+                this.name = ExplodeType.SRC_IP_AND_DEST_IP_COUNT.getName();
+            }
+            if(name.equals(ExplodeType.SRC_IP_AND_DEST_PORT_COUNT.getExplode())){
+                this.name = ExplodeType.SRC_IP_AND_DEST_PORT_COUNT.getName();
+            }
+        }
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        if(StringUtils.isNotEmpty(name)){
+            if(name.equals(ExplodeType.SRC_IP_SUM.getName())){
+                this.name = ExplodeType.SRC_IP_SUM.getExplode();
+            }
+            if(name.equals(ExplodeType.SRC_IP_AND_DEST_IP_COUNT.getName())){
+                this.name = ExplodeType.SRC_IP_AND_DEST_IP_COUNT.getExplode();
+            }
+            if(name.equals(ExplodeType.SRC_IP_AND_DEST_PORT_COUNT.getName())){
+                this.name = ExplodeType.SRC_IP_AND_DEST_PORT_COUNT.getExplode();
+            }
+        }
     }
 
     public List<RuleVo> getRuleVos() {
@@ -58,10 +81,6 @@ public class ExplodeVo{
     public ExplodeVo(String name, List<RuleVo> ruleVos) {
         this.name = name;
         this.ruleVos = ruleVos;
-    }
-    public ExplodeVo(String id, String name) {
-        this.id = id;
-        this.name = name;
     }
 
     @Override

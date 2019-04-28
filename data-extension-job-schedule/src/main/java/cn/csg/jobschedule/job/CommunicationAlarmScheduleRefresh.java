@@ -13,17 +13,20 @@ import javax.annotation.Resource;
  * 动态更改任务执行周期
  * Created by hjw on 20190426
  */
-@Configuration
-@EnableScheduling
-@Component
+//@Configuration
+//@EnableScheduling
+//@Component
 public class CommunicationAlarmScheduleRefresh {
 
+    //相同源ip发起访问数
     @Resource(name="srcIpSumTrigger")
     private SimpleTrigger srcIpSumTrigger;
 
+    //相同源ip访问不同目的ip数
     @Resource(name="srcIpAndDestIpCountTrigger")
     private SimpleTrigger srcIpAndDestIpCountTrigger;
 
+    //相同访问同一目的ip端口数
     @Resource(name="srcIpAndDestPortCountTrigger")
     private SimpleTrigger srcIpAndDestPortCountTrigger;
 
