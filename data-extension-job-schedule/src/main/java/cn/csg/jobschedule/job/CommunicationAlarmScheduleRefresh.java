@@ -2,20 +2,27 @@ package cn.csg.jobschedule.job;
 
 import org.quartz.*;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 动态更改任务执行周期
  * Created by hjw on 20190426
  */
-//@Configuration
-//@EnableScheduling
-//@Component
+@Configuration
+@EnableScheduling
+@Component
 public class CommunicationAlarmScheduleRefresh {
 
     //相同源ip发起访问数
@@ -33,46 +40,57 @@ public class CommunicationAlarmScheduleRefresh {
     @Resource(name="scheduler")
     private Scheduler scheduler;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Scheduled(fixedDelay  = 30000)
     public void scheduleUpdateCronTrigger() throws SchedulerException {
-//        try {
-//            Thread.sleep(60000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-        SimpleTriggerImpl oneTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpSumTrigger.getKey());
-        long oneOldInterval = oneTrigger.getRepeatInterval();
+        SimpleTriggerImpl srcIpSumOldTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpSumTrigger.getKey());
+        long srcIpSumOldInterval = srcIpSumOldTrigger.getRepeatInterval();
 
-        SimpleTriggerImpl twoTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpAndDestIpCountTrigger.getKey());
-        long twoOldInterval = twoTrigger.getRepeatInterval();
+        SimpleTriggerImpl srcIpAndDestIpCountOldTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpAndDestIpCountTrigger.getKey());
+        long srcIpAndDestIpCountOldInterval = srcIpAndDestIpCountOldTrigger.getRepeatInterval();
 
-        SimpleTriggerImpl threeTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpAndDestPortCountTrigger.getKey());
-        long threeOldInterval = twoTrigger.getRepeatInterval();
+        SimpleTriggerImpl srcIpAndDestPortCountOldTrigger =(SimpleTriggerImpl)scheduler.getTrigger(srcIpAndDestPortCountTrigger.getKey());
+        long srcIpAndDestPortCountOldInterval = srcIpAndDestPortCountOldTrigger.getRepeatInterval();
 
-        //TODO 获取数据库中的cron表达式
-        long searchInterval = 15*1000;
-        System.out.println("当前的定时任务周期:"+oneOldInterval);
-        System.out.println("更新后的的定时任务周期:"+searchInterval);
-
-        if (oneOldInterval == searchInterval){
-        }else{
-            //更改执行周期
-            oneTrigger.setRepeatInterval(searchInterval);
-            scheduler.rescheduleJob(srcIpSumTrigger.getKey(),oneTrigger);
+        String sql = "select name,rule_value from tb_explode te left join tb_rule tr on te.id = tr.rule where rule_key = 'window'";
+        List dataList = jdbcTemplate.queryForList(sql);
+        long srcIpSumInterval = 60000;
+        long srcIpAndDestPortCountInterval = 60000;
+        long srcIpAndDestIpCountInterval = 60000;
+        if(dataList != null && dataList.size() > 0){
+            Iterator it = dataList.iterator();
+            while (it.hasNext()){
+                Map ruleMap = (Map)it.next();
+                if("srcIpSum".equals(ruleMap.get("name"))){
+                    srcIpSumInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                }
+                if("srcIpAndDestIpCount".equals(ruleMap.get("name"))){
+                    srcIpAndDestIpCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                }
+                if("srcIpAndDestPortCount".equals(ruleMap.get("name"))){
+                    srcIpAndDestPortCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                }
+            }
         }
 
-        if (twoOldInterval == searchInterval){
+        if (srcIpSumOldInterval == srcIpSumInterval){
         }else{
-            //更改执行周期
-            twoTrigger.setRepeatInterval(searchInterval);
-            scheduler.rescheduleJob(srcIpAndDestIpCountTrigger.getKey(),twoTrigger);
+            srcIpSumOldTrigger.setRepeatInterval(srcIpSumInterval);
+            scheduler.rescheduleJob(srcIpSumTrigger.getKey(),srcIpSumOldTrigger);
         }
 
-        if (threeOldInterval == searchInterval){
+        if (srcIpAndDestIpCountOldInterval == srcIpAndDestIpCountInterval){
         }else{
-            //更改执行周期
-            threeTrigger.setRepeatInterval(searchInterval);
-            scheduler.rescheduleJob(srcIpAndDestPortCountTrigger.getKey(),threeTrigger);
+            srcIpAndDestIpCountOldTrigger.setRepeatInterval(srcIpAndDestIpCountInterval);
+            scheduler.rescheduleJob(srcIpAndDestIpCountTrigger.getKey(),srcIpAndDestIpCountOldTrigger);
+        }
+
+        if (srcIpAndDestPortCountOldInterval == srcIpAndDestPortCountInterval){
+        }else{
+            srcIpAndDestPortCountOldTrigger.setRepeatInterval(srcIpAndDestPortCountInterval);
+            scheduler.rescheduleJob(srcIpAndDestPortCountTrigger.getKey(),srcIpAndDestPortCountOldTrigger);
         }
     }
 }

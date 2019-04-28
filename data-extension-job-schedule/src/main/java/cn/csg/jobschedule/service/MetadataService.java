@@ -3,6 +3,7 @@ package cn.csg.jobschedule.service;
 import cn.csg.jobschedule.constants.DatetimeConstants;
 import cn.csg.jobschedule.dao.ElasticsearchDao;
 import cn.csg.jobschedule.util.DatetimeUtil;
+import cn.csg.jobschedule.util.ESUtil;
 import cn.csg.jobschedule.util.EsConnectionPool;
 import cn.csg.jobschedule.util.IDUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +33,9 @@ public class MetadataService {
 
     @Autowired
     private ElasticsearchDao elasticsearchDao;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Value("${escluster.cluster}")
     private String esClusterName;
@@ -48,11 +53,23 @@ public class MetadataService {
     private String communicationalarmType;
 
     /**
+     * 根据告警规则名称获取告警统计规则
+     * @param alarmName 告警规则名称
+     * @return
+     * @throws Exception
+     */
+    public List getAlarmRule(String alarmName) throws Exception{
+        String sql = "select * from tb_explode te left join tb_rule tr on te.id = tr.rule where  name = '"+alarmName+"'";
+        List dataList = jdbcTemplate.queryForList(sql);
+        return dataList;
+    }
+
+    /**
      * 前往ES集群获取数据
      * @param queryStr
      * @return
      */
-    public JSONObject getResultByHttp(String queryStr){
+    public JSONObject getResultByHttp(String queryStr) throws Exception{
         return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
     }
 
@@ -73,6 +90,7 @@ public class MetadataService {
                         TransportClient client = esConnectionPool.getClient();
                         BulkRequestBuilder bulkRequest = client.prepareBulk();
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                        String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                         for(Map corpIdGroupMap : buckets){
 
@@ -89,17 +107,16 @@ public class MetadataService {
                                     String id = IDUtil.getUUID();
                                     countDataToEsJson.put("id", id);
                                     countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createTime);
+                                    countDataToEsJson.put("createTime", createDateStr);
                                     countDataToEsJson.put("srcIp",srcIp);
                                     countDataToEsJson.put("countData",countData);
                                     countDataToEsJson.put("alarmType","爆发式通信对告警");
                                     countDataToEsJson.put("alarmLevel","紧急");
-//                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
-//                        ESUtil.saveLastToES(bulkRequest) ;
-                        System.out.println("#####################end#######################");
+                        ESUtil.saveLastToES(bulkRequest) ;
                     }
 
                 }catch (Exception e){
@@ -128,6 +145,7 @@ public class MetadataService {
                         TransportClient client = esConnectionPool.getClient();
                         BulkRequestBuilder bulkRequest = client.prepareBulk();
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                        String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                         for (Map corpIdGroupMap : buckets) {
                             String conrpId = corpIdGroupMap.get("key") + "";
@@ -148,18 +166,17 @@ public class MetadataService {
                                     String id = IDUtil.getUUID();
                                     countDataToEsJson.put("id", id);
                                     countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createTime);
+                                    countDataToEsJson.put("createTime", createDateStr);
                                     countDataToEsJson.put("srcIp",srcIp);
                                     countDataToEsJson.put("countData",countData);
                                     countDataToEsJson.put("destIpList",destIpList);
                                     countDataToEsJson.put("alarmType","爆发式通信对告警");
                                     countDataToEsJson.put("alarmLevel","紧急");
-//                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
-//                        ESUtil.saveLastToES(bulkRequest) ;
-                        System.out.println("*******************end********************");
+                        ESUtil.saveLastToES(bulkRequest) ;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -187,6 +204,7 @@ public class MetadataService {
                         TransportClient client = esConnectionPool.getClient();
                         BulkRequestBuilder bulkRequest = client.prepareBulk();
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                        String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                         for (Map corpIdGroupMap : buckets) {
                             String conrpId = corpIdGroupMap.get("key") + "";
@@ -212,22 +230,21 @@ public class MetadataService {
                                             String id = IDUtil.getUUID();
                                             countDataToEsJson.put("id", id);
                                             countDataToEsJson.put("conrpId",conrpId);
-                                            countDataToEsJson.put("createTime", createTime);
+                                            countDataToEsJson.put("createTime", createDateStr);
                                             countDataToEsJson.put("srcIp",srcIp);
                                             countDataToEsJson.put("countData",countData);
                                             countDataToEsJson.put("destIp",destIp);
                                             countDataToEsJson.put("destPortList",destPortList);
                                             countDataToEsJson.put("alarmType","爆发式通信对告警");
                                             countDataToEsJson.put("alarmLevel","紧急");
-//                                            bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                            bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
                                         }
                                     }
 
                                 }
                             }
                         }
-//                        ESUtil.saveLastToES(bulkRequest) ;
-                        System.out.println("-------------------end-------------------");
+                        ESUtil.saveLastToES(bulkRequest) ;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

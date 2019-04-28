@@ -8,11 +8,10 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-@Service
+@Component
 public class JobTriggerService {
     //相同源ip发起访问数
     @Resource(name="srcIpSumTrigger")
