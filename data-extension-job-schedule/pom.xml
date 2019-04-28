@@ -104,6 +104,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <!-- 使用外部文件 -->
+                <configuration>
+                    <addResources>true</addResources>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>
