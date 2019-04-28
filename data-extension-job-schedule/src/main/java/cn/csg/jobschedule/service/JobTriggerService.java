@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-@Configuration
-@EnableScheduling
 @Component
 public class JobTriggerService {
     //相同源ip发起访问数
