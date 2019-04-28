@@ -64,17 +64,16 @@ public class CommunicationAlarmScheduleRefresh {
             while (it.hasNext()){
                 Map ruleMap = (Map)it.next();
                 if("srcIpSum".equals(ruleMap.get("name"))){
-                    srcIpSumInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                    srcIpSumInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*1000L;
                 }
                 if("srcIpAndDestIpCount".equals(ruleMap.get("name"))){
-                    srcIpAndDestIpCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                    srcIpAndDestIpCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*1000L;
                 }
                 if("srcIpAndDestPortCount".equals(ruleMap.get("name"))){
-                    srcIpAndDestPortCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*100L;
+                    srcIpAndDestPortCountInterval = Double.valueOf(ruleMap.get("rule_value")+"").longValue()*1000L;
                 }
             }
         }
-
         if (srcIpSumOldInterval == srcIpSumInterval){
         }else{
             srcIpSumOldTrigger.setRepeatInterval(srcIpSumInterval);
