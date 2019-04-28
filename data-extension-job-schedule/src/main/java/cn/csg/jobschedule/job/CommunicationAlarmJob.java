@@ -32,7 +32,6 @@ public class CommunicationAlarmJob {
      */
     public void executeSrcIpSumTask() {
         try {
-            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"-------------srcIp在t分钟内发起n次访问----------");
             List dataList = metadataService.getAlarmRule("srcIpSum");
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
@@ -52,7 +51,6 @@ public class CommunicationAlarmJob {
      */
     public void executeSrcIpAndDestIpCountTask() {
         try {
-            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"-------------srcIp在t分钟内访问了n个destIp----------");
             List dataList = metadataService.getAlarmRule("srcIpAndDestIpCount");
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
@@ -72,7 +70,6 @@ public class CommunicationAlarmJob {
      */
     public void executeSrcIpAndDestPortCountTask() {
         try {
-            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"-------------srcIp在t分钟内访问destIp的n个端口----------");
             List dataList = metadataService.getAlarmRule("srcIpAndDestPortCount");
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
