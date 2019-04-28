@@ -37,6 +37,7 @@ public class CommunicationAlarmJob {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
                 String srcIpSumQueryStr = getSrcIpSumQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
+                logger.info("#############srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内发起"+ruleValueMap.get("thresholdValue")+"次访问 job正在执行########");
                 JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
                 metadataService.handleSrcIpSumData(srcIpSumJson);
             }
@@ -55,6 +56,7 @@ public class CommunicationAlarmJob {
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
+                logger.info("&&&&&&&&&&srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内访问了"+ruleValueMap.get("thresholdValue")+"个destIp 正在执行&&&&&&&&");
                 String srcIpAndDestIpCountQueryStr = getSrcIpAndDestIpCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestIpCountJson = metadataService.getResultByHttp(srcIpAndDestIpCountQueryStr);
                 metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
@@ -74,6 +76,7 @@ public class CommunicationAlarmJob {
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
+                logger.info("********srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内访问destIp的"+ruleValueMap.get("thresholdValue")+"个端口 正在执行********");
                 String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestPortCountJson = metadataService.getResultByHttp(srcIpAndDestPortCountQueryStr);
                 metadataService.handleSrcIpAndDestPortCountData(srcIpAndDestPortCountJson);

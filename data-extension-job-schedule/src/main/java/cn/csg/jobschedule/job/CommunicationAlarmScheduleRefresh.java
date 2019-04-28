@@ -24,6 +24,7 @@ import java.util.Map;
 @EnableScheduling
 @Component
 public class CommunicationAlarmScheduleRefresh {
+    private final static Logger logger = LoggerFactory.getLogger(CommunicationAlarmScheduleRefresh.class);
 
     //相同源ip发起访问数
     @Resource(name="srcIpSumTrigger")
@@ -74,6 +75,11 @@ public class CommunicationAlarmScheduleRefresh {
                 }
             }
         }
+
+        logger.info("srcIpSumInterval============================="+srcIpSumInterval+"毫秒==>"+(srcIpSumInterval/60/1000)+"分");
+        logger.info("srcIpAndDestIpCountInterval=================="+srcIpAndDestIpCountInterval+"毫秒==>"+(srcIpAndDestIpCountInterval/60/1000)+"分");
+        logger.info("srcIpAndDestPortCountInterval================"+srcIpAndDestPortCountInterval+"毫秒==>"+(srcIpAndDestPortCountInterval/60/1000)+"分");
+
         if (srcIpSumOldInterval == srcIpSumInterval){
         }else{
             srcIpSumOldTrigger.setRepeatInterval(srcIpSumInterval);

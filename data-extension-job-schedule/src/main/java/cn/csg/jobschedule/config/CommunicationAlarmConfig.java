@@ -49,13 +49,14 @@ public class CommunicationAlarmConfig {
             e.printStackTrace();
             logger.error("前往数据库中查询srcIpSumTrigger定时周期失败："+e.getMessage());
         }
+        long ruleValue = 60000;
         if(dataList != null && dataList.size() > 0){
             Map map = (Map)dataList.get(0);
-            Long ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
-            trigger.setRepeatInterval(ruleValue);
-        }else{
-            trigger.setRepeatInterval(60000);
+            ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
+
         }
+        logger.info("-----------srcIpSumTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
+        trigger.setRepeatInterval(ruleValue);
         return trigger;
     }
 
@@ -80,13 +81,14 @@ public class CommunicationAlarmConfig {
             e.printStackTrace();
             logger.error("前往数据库中查询srcIpAndDestIpCountTrigger定时周期失败："+e.getMessage());
         }
+        long ruleValue = 60000;
         if(dataList != null && dataList.size() > 0){
             Map map = (Map)dataList.get(0);
-            Long ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
-            trigger.setRepeatInterval(ruleValue);
-        }else{
-            trigger.setRepeatInterval(60000);
+            ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
+
         }
+        trigger.setRepeatInterval(ruleValue);
+        logger.info("-----------srcIpAndDestIpCountTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
         return trigger;
     }
 
@@ -111,13 +113,14 @@ public class CommunicationAlarmConfig {
             e.printStackTrace();
             logger.error("前往数据库中查询srcIpAndDestPortCountTrigger定时周期失败："+e.getMessage());
         }
+        long ruleValue = 60000;
         if(dataList != null && dataList.size() > 0){
             Map map = (Map)dataList.get(0);
-            Long ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
-            trigger.setRepeatInterval(ruleValue);
-        }else{
-            trigger.setRepeatInterval(60000);
+            ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
+
         }
+        trigger.setRepeatInterval(ruleValue);
+        logger.info("-----------srcIpAndDestPortCountTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
         return trigger;
     }
 
