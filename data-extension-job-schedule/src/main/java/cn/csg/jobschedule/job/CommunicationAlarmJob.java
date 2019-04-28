@@ -19,7 +19,6 @@ import java.util.Date;
  * 爆发式通信对告警统计
  */
 @Component
-@Configuration
 @EnableScheduling
 public class CommunicationAlarmJob{
 
@@ -28,31 +27,54 @@ public class CommunicationAlarmJob{
     @Autowired
     public MetadataService metadataService;
 
-    protected void executeCommunicationAlarmTask(){
+    /**
+     * 1.srcIp在t分钟内发起n次访问
+     */
+    public void executeSrcIpSumTask(){
+//        System.out.println("-------------srcIp在t分钟内发起n次访问 task---"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//        //TODO 获取数据库中的统计策略，更改ES查询条件
         //srcIp在t分钟内发起n次访问 start
-        String srcIpSumQueryStr = getSrcIpSumQueryStr();
+        String srcIpSumQueryStr = getSrcIpSumQueryStr(10,new Date(),new Date());
         JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
         metadataService.handleSrcIpSumData(srcIpSumJson);
         //srcIp在t分钟内发起n次访问 end
+    }
 
-        //srcIp在t分钟内访问了n个destIp start
-        String srcIpAndDestIpCountQueryStr = getSrcIpAndDestIpCountQueryStr();
-        JSONObject srcIpAndDestIpCountJson = metadataService.getResultByHttp(srcIpAndDestIpCountQueryStr);
-        metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
-        //srcIp在t分钟内访问了n个destIp end
+    /**
+     * 2.srcIp在t分钟内访问了n个destIp
+     */
+    public void executeSrcIpAndDestIpCountTask(){
+//        System.out.println("-------------srcIp在t分钟内访问了n个destIp task---"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            String srcIpAndDestIpCountQueryStr = getSrcIpAndDestIpCountQueryStr(10,new Date(),new Date());
+            JSONObject srcIpAndDestIpCountJson = metadataService.getResultByHttp(srcIpAndDestIpCountQueryStr);
+            metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
+    }
 
-        //srcIp在t分钟内访问destIp的n个端口 start
-        String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr();
+    /**
+     * 3.srcIp在t分钟内访问destIp的n个端口
+     */
+    public void executeSrcIpAndDestPortCountTask(){
+//        System.out.println("-------------srcIp在t分钟内访问destIp的n个端口 task---"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr(10,new Date(),new Date());
         JSONObject srcIpAndDestPortCountJson = metadataService.getResultByHttp(srcIpAndDestPortCountQueryStr);
         metadataService.handleSrcIpAndDestPortCountData(srcIpAndDestPortCountJson);
-        //srcIp在t分钟内访问destIp的n个端口 end
     }
+
 
     /**
      * (1)组装 srcIp在t分钟内发起n次访问 统计条件
      * @return
      */
-    private String getSrcIpSumQueryStr(){
+    private String getSrcIpSumQueryStr(Integer value,Date startTime,Date endTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startStr = sdf.format(startTime);
+        String[] startDateArr = startStr.split(" ");
+        String startTimeStr = startDateArr[0]+"T"+startDateArr[1]+"+08:00";
+
+        String endStr = sdf.format(endTime);
+        String[] endDateArr = endStr.split(" ");
+        String endTimeStr = endDateArr[0]+"T"+endDateArr[1]+"+08:00";
+
         String queryStr = "{\n" +
                 "    \"aggs\": {\n" +
                 "        \"corpIdCount\": {\n" +
@@ -69,7 +91,7 @@ public class CommunicationAlarmJob{
                 "                                \"buckets_path\": {\n" +
                 "                                    \"filterKey\": \"doubleCountSum\"\n" +
                 "                                },\n" +
-                "                                \"script\": \"params.filterKey >= 10\"\n" +
+                "                                \"script\": \"params.filterKey >= "+value+"\"\n" +
                 "                            }\n" +
                 "                        }\n" +
                 "                    },\n" +
@@ -86,8 +108,8 @@ public class CommunicationAlarmJob{
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"createTime\": {\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \""+startTimeStr+"\",\n" +
+                "                \"lt\": \""+endTimeStr+"\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -100,7 +122,16 @@ public class CommunicationAlarmJob{
      * (2)组装 srcIp在t分钟内访问了n个destIp 统计条件
      * @return
      */
-    private String getSrcIpAndDestIpCountQueryStr(){
+    private String getSrcIpAndDestIpCountQueryStr(Integer value,Date startTime,Date endTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startStr = sdf.format(startTime);
+        String[] startDateArr = startStr.split(" ");
+        String startTimeStr = startDateArr[0]+"T"+startDateArr[1]+"+08:00";
+
+        String endStr = sdf.format(endTime);
+        String[] endDateArr = endStr.split(" ");
+        String endTimeStr = endDateArr[0]+"T"+endDateArr[1]+"+08:00";
+
         String queryStr = "{\n" +
                 "    \"aggs\": {\n" +
                 "        \"corpIdCount\": {\n" +
@@ -118,7 +149,7 @@ public class CommunicationAlarmJob{
                 "                                    \"srcIpCount\": \"_count\"\n" +
                 "                                },\n" +
                 "                                \"script\": {\n" +
-                "                                    \"source\": \"params.srcIpCount > 0\"\n" +
+                "                                    \"source\": \"params.srcIpCount > "+value+"\"\n" +
                 "                                }\n" +
                 "                            }\n" +
                 "                        }\n" +
@@ -136,8 +167,8 @@ public class CommunicationAlarmJob{
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"createTime\": {\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \""+startTimeStr+"\",\n" +
+                "                \"lt\": \""+endTimeStr+"\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -150,7 +181,16 @@ public class CommunicationAlarmJob{
      * (3)组装 srcIp在t分钟内访问destIp的n个端口 查询条件
      * @return
      */
-    private String getSrcIpAndDestPortCountQueryStr(){
+    private String getSrcIpAndDestPortCountQueryStr(Integer value,Date startTime,Date endTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startStr = sdf.format(startTime);
+        String[] startDateArr = startStr.split(" ");
+        String startTimeStr = startDateArr[0]+"T"+startDateArr[1]+"+08:00";
+
+        String endStr = sdf.format(endTime);
+        String[] endDateArr = endStr.split(" ");
+        String endTimeStr = endDateArr[0]+"T"+endDateArr[1]+"+08:00";
+
         String queryStr = "{\n" +
                 "    \"aggs\": {\n" +
                 "        \"corpIdCount\": {\n" +
@@ -170,7 +210,7 @@ public class CommunicationAlarmJob{
                 "                                            \"destIpCount\": \"_count\"\n" +
                 "                                        },\n" +
                 "                                        \"script\": {\n" +
-                "                                            \"source\": \"params.destIpCount > 0\"\n" +
+                "                                            \"source\": \"params.destIpCount > "+value+"\"\n" +
                 "                                        }\n" +
                 "                                    }\n" +
                 "                                }\n" +
@@ -193,8 +233,8 @@ public class CommunicationAlarmJob{
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"createTime\": {\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \""+startTimeStr+"\",\n" +
+                "                \"lt\": \""+endTimeStr+"\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
