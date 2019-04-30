@@ -70,7 +70,11 @@ public class MetadataService {
      * @return
      */
     public JSONObject getResultByHttp(String queryStr) throws Exception{
-        return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
+
+        if(isIndexExisys(communicationalarmIndex)){
+            return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
+        }
+        return null;
     }
 
     //srcIp在t分钟内发起n次访问
@@ -254,6 +258,17 @@ public class MetadataService {
         }).start();
     }
 
+    /**
+     * 判断ES索引是否存在
+     * @param index 索引名称
+     * @return true 存在；false 不存在
+     * @throws Exception
+     */
+    private boolean isIndexExisys(String index) throws Exception{
+        IndicesExistsRequest inExistsRequest = new IndicesExistsRequest(new String[]{index});
+        return elasticsearchTemplate.getClient().admin().indices().exists(inExistsRequest).actionGet().isExists();
+
+    }
 
     public String getMetadata(){
 //        Client transportClient = elasticsearchTemplate.getClient();

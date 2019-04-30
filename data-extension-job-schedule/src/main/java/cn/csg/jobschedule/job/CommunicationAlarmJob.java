@@ -39,7 +39,10 @@ public class CommunicationAlarmJob {
                 String srcIpSumQueryStr = getSrcIpSumQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 logger.info("#############srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内发起"+ruleValueMap.get("thresholdValue")+"次访问 job正在执行########");
                 JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
-                metadataService.handleSrcIpSumData(srcIpSumJson);
+
+                if(srcIpSumJson != null && srcIpSumJson.size()>0){
+                    metadataService.handleSrcIpSumData(srcIpSumJson);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +62,9 @@ public class CommunicationAlarmJob {
                 logger.info("&&&&&&&&&&srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内访问了"+ruleValueMap.get("thresholdValue")+"个destIp 正在执行&&&&&&&&");
                 String srcIpAndDestIpCountQueryStr = getSrcIpAndDestIpCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestIpCountJson = metadataService.getResultByHttp(srcIpAndDestIpCountQueryStr);
-                metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
+                if(srcIpAndDestIpCountJson != null && srcIpAndDestIpCountJson.size()>0){
+                    metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,7 +84,9 @@ public class CommunicationAlarmJob {
                 logger.info("********srcIp在"+(ruleValueMap.get("rangValue")/60)+"分钟内访问destIp的"+ruleValueMap.get("thresholdValue")+"个端口 正在执行********");
                 String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestPortCountJson = metadataService.getResultByHttp(srcIpAndDestPortCountQueryStr);
-                metadataService.handleSrcIpAndDestPortCountData(srcIpAndDestPortCountJson);
+                if(srcIpAndDestPortCountJson != null && srcIpAndDestPortCountJson.size()>0){
+                    metadataService.handleSrcIpAndDestPortCountData(srcIpAndDestPortCountJson);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
