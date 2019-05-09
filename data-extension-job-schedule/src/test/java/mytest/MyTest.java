@@ -14,6 +14,12 @@ import java.util.Map;
 public class MyTest {
 
     public static void main(String[] args) throws Exception{
+        System.out.println("-----------start------------");
+        List<String> deviceGUIDList = new ArrayList<String>();
+        for(int i = 1;i<10;i++){
+            deviceGUIDList.add(IDUtil.getUUID());
+        }
+
         List<Integer> corpIdList = new ArrayList<Integer>();
         for(int i = 1;i<10;i++){
             corpIdList.add(i);
@@ -50,17 +56,18 @@ public class MyTest {
             Map<String,Object> contentMap = new HashMap<String,Object>();
             String id = IDUtil.getUUID();
             contentMap.put("id", id) ;
-            contentMap.put("doubleCount", 10) ;
+            contentMap.put("count", 10) ;
             contentMap.put("destIp", "227.126.65."+dataList.get(destNum));
             contentMap.put("srcIp", "172.16.140."+dataList.get(srcNum));
             contentMap.put("corpId", dataList.get(corpIdNum));
-            contentMap.put("createTime", "2019-04-24T15:"+timeList.get(timeNum)+":36+08:00");
+            contentMap.put("deviceGUID", deviceGUIDList.get(corpIdNum));
+            contentMap.put("sessionStartTime", "2019-04-24T15:"+timeList.get(timeNum)+":36+08:00");
             contentMap.put("srcPort", portList.get(srcPortNum));
             contentMap.put("destPort", portList.get(destPortNum));
             System.out.println("i---------->>>>>"+i+"#"+contentMap);
             bulkRequest.add(client.prepareIndex(index, type, id).setSource(contentMap));
         }
         ESUtil.saveLastToES(bulkRequest) ;
-        System.out.println("-------------ok-----------");
+        System.out.println("-------------end-----------");
     }
 }
