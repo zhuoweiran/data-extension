@@ -76,9 +76,9 @@ public class CommunicationAlarmScheduleRefresh {
             }
         }
 
-        logger.info("srcIpSumInterval============================="+srcIpSumInterval+"毫秒==>"+(srcIpSumInterval/60/1000)+"分");
-        logger.info("srcIpAndDestIpCountInterval=================="+srcIpAndDestIpCountInterval+"毫秒==>"+(srcIpAndDestIpCountInterval/60/1000)+"分");
-        logger.info("srcIpAndDestPortCountInterval================"+srcIpAndDestPortCountInterval+"毫秒==>"+(srcIpAndDestPortCountInterval/60/1000)+"分");
+//        logger.info("srcIpSumInterval============================="+srcIpSumInterval+"毫秒==>"+(srcIpSumInterval/60/1000)+"分");
+//        logger.info("srcIpAndDestIpCountInterval=================="+srcIpAndDestIpCountInterval+"毫秒==>"+(srcIpAndDestIpCountInterval/60/1000)+"分");
+//        logger.info("srcIpAndDestPortCountInterval================"+srcIpAndDestPortCountInterval+"毫秒==>"+(srcIpAndDestPortCountInterval/60/1000)+"分");
 
         if (srcIpSumOldInterval == srcIpSumInterval){
         }else{
