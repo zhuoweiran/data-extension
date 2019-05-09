@@ -46,11 +46,14 @@ public class MetadataService {
     @Value("${escluster.port}")
     private String esClusterPort;
 
-    @Value("${escluster.communicationalarm.index}")
-    private String communicationalarmIndex;
+    @Value("${escluster.commpair_alarm.index}")
+    private String commpairAlarmIndex;
 
-    @Value("${escluster.communicationalarm.type}")
-    private String communicationalarmType;
+    @Value("${escluster.type}")
+    private String type;
+
+    @Value("${escluster.security_policy.index}")
+    private String securityPolicyIndex;
 
     /**
      * 根据告警规则名称获取告警统计规则
@@ -71,7 +74,7 @@ public class MetadataService {
      */
     public JSONObject getResultByHttp(String queryStr) throws Exception{
 
-        if(isIndexExisys(communicationalarmIndex)){
+        if(isIndexExisys(commpairAlarmIndex)){
             return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
         }
         return null;
@@ -84,11 +87,11 @@ public class MetadataService {
             public void run() {
                 try {
                     Map aggregationsMap = (Map)jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map)aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List)corpIdCountMap.get("buckets");
+                    Map deviceGUIDCountMap = (Map)aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List)deviceGUIDCountMap.get("buckets");
                     if(buckets != null && buckets.size() > 0){
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -96,10 +99,10 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for(Map corpIdGroupMap : buckets){
+                        for(Map deviceGUIDGroupMap : buckets){
 
-                            String conrpId = corpIdGroupMap.get("key")+"";
-                            Map srcIpCountMap = (Map)corpIdGroupMap.get("srcIpCount");
+                            String deviceGUID = deviceGUIDGroupMap.get("key")+"";
+                            Map srcIpCountMap = (Map)deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> sumResultBuckets = (List)srcIpCountMap.get("buckets");
                             if(sumResultBuckets != null && sumResultBuckets.size() > 0){
                                 for(Map sumResultMap : sumResultBuckets){
@@ -110,17 +113,20 @@ public class MetadataService {
                                     JSONObject countDataToEsJson = new JSONObject();
                                     String id = IDUtil.getUUID();
                                     countDataToEsJson.put("id", id);
-                                    countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createDateStr);
+                                    countDataToEsJson.put("deviceGUID",deviceGUID);
+                                    countDataToEsJson.put("sessionStartTime", createDateStr);
                                     countDataToEsJson.put("srcIp",srcIp);
                                     countDataToEsJson.put("countData",countData);
                                     countDataToEsJson.put("alarmType","爆发式通信对告警");
                                     countDataToEsJson.put("alarmLevel","紧急");
-                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    System.out.println("srcIp在t分钟内发起n次访问 start saved to Database:");
+                                    System.out.println("countDataToEsJson===>"+countDataToEsJson);
+                                    System.out.println("srcIp在t分钟内发起n次访问 start saved to Database:");
+//                                    bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
-                        ESUtil.saveLastToES(bulkRequest) ;
+//                        ESUtil.saveLastToES(bulkRequest) ;
                     }
 
                 }catch (Exception e){
@@ -139,11 +145,11 @@ public class MetadataService {
             public void run() {
                 try {
                     Map aggregationsMap = (Map) jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List) corpIdCountMap.get("buckets");
+                    Map deviceGUIDMap = (Map) aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List) deviceGUIDMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -151,9 +157,9 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for (Map corpIdGroupMap : buckets) {
-                            String conrpId = corpIdGroupMap.get("key") + "";
-                            Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
+                        for (Map deviceGUIDGroupMap : buckets) {
+                            String deviceGUID = deviceGUIDGroupMap.get("key") + "";
+                            Map srcIpCountMap = (Map) deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> srcIpCountResultList = (List) srcIpCountMap.get("buckets");
                             if (srcIpCountResultList != null && srcIpCountResultList.size() > 0) {
                                 for (Map srcIpCountResultMap : srcIpCountResultList) {
@@ -169,18 +175,21 @@ public class MetadataService {
                                     JSONObject countDataToEsJson = new JSONObject();
                                     String id = IDUtil.getUUID();
                                     countDataToEsJson.put("id", id);
-                                    countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createDateStr);
+                                    countDataToEsJson.put("deviceGUID",deviceGUID);
+                                    countDataToEsJson.put("sessionStartTime", createDateStr);
                                     countDataToEsJson.put("srcIp",srcIp);
                                     countDataToEsJson.put("countData",countData);
                                     countDataToEsJson.put("destIpList",destIpList);
                                     countDataToEsJson.put("alarmType","爆发式通信对告警");
                                     countDataToEsJson.put("alarmLevel","紧急");
-                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    System.out.println("srcIp在t分钟内访问了n个destIp start saved to Database:");
+                                    System.out.println("countDataToEsJson===>"+countDataToEsJson);
+                                    System.out.println("srcIp在t分钟内访问了n个destIp start saved to Database:");
+//                                    bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                 }
                             }
                         }
-                        ESUtil.saveLastToES(bulkRequest) ;
+//                        ESUtil.saveLastToES(bulkRequest) ;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -198,11 +207,11 @@ public class MetadataService {
             public void run() {
                 try {
                     Map aggregationsMap = (Map) jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List) corpIdCountMap.get("buckets");
+                    Map deviceGUIDCountMap = (Map) aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List) deviceGUIDCountMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -210,9 +219,9 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for (Map corpIdGroupMap : buckets) {
-                            String conrpId = corpIdGroupMap.get("key") + "";
-                            Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
+                        for (Map deviceGUIDGroupMap : buckets) {
+                            String deviceGUID = deviceGUIDGroupMap.get("key") + "";
+                            Map srcIpCountMap = (Map) deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> srcIpCountResultList = (List) srcIpCountMap.get("buckets");
                             if (srcIpCountResultList != null && srcIpCountResultList.size() > 0) {
                                 for (Map srcIpCountResultMap : srcIpCountResultList) {
@@ -233,22 +242,25 @@ public class MetadataService {
                                             JSONObject countDataToEsJson = new JSONObject();
                                             String id = IDUtil.getUUID();
                                             countDataToEsJson.put("id", id);
-                                            countDataToEsJson.put("conrpId",conrpId);
-                                            countDataToEsJson.put("createTime", createDateStr);
+                                            countDataToEsJson.put("deviceGUID",deviceGUID);
+                                            countDataToEsJson.put("sessionStartTime", createDateStr);
                                             countDataToEsJson.put("srcIp",srcIp);
                                             countDataToEsJson.put("countData",countData);
                                             countDataToEsJson.put("destIp",destIp);
                                             countDataToEsJson.put("destPortList",destPortList);
                                             countDataToEsJson.put("alarmType","爆发式通信对告警");
                                             countDataToEsJson.put("alarmLevel","紧急");
-                                            bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                            System.out.println("srcIp在t分钟内访问destIp的n个端口 start saved to Database:");
+                                            System.out.println("countDataToEsJson===>"+countDataToEsJson);
+                                            System.out.println("srcIp在t分钟内访问destIp的n个端口 start saved to Database:");
+//                                            bulkRequest.add(client.prepareIndex(index, type, id).setSource(countDataToEsJson));
                                         }
                                     }
 
                                 }
                             }
                         }
-                        ESUtil.saveLastToES(bulkRequest) ;
+//                        ESUtil.saveLastToES(bulkRequest) ;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
