@@ -37,7 +37,7 @@ public class DeviceUtils {
      * @param corporationBean
      */
     public static void corpAddToMap(Map<String, Object> map, String corporationBean) {
-        if (corporationBean != null) {
+        if (corporationBean != null && corporationBean.indexOf("{") != -1) {
             JSONObject jsonObject = JSONObject.parseObject(corporationBean);
             map.put("corpName", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_CORPNAME)));
             map.put("firm", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_ORGNAME)));
@@ -65,13 +65,15 @@ public class DeviceUtils {
      * @param deviceBean
      */
     public static void deviceStrAddToMap(Map<String, Object> map, String deviceBean) {
-        JSONObject jsonObject = JSONObject.parseObject(deviceBean);
-        map.put("deviceName", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_NAME)));
-        map.put("ip", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_IP)));
-        map.put("securityPartition", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_AREA)));
-        map.put("speciality", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_BELONGEDMAJOR)));
-        map.put("deviceType", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_DEVICECODE)));
-        map.put("os", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_OS)));
+        if(deviceBean != null && deviceBean.indexOf("{") != -1){
+            JSONObject jsonObject = JSONObject.parseObject(deviceBean);
+            map.put("deviceName", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_NAME)));
+            map.put("ip", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_IP)));
+            map.put("securityPartition", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_AREA)));
+            map.put("speciality", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_BELONGEDMAJOR)));
+            map.put("deviceType", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_DEVICECODE)));
+            map.put("os", CommonUtil.changeNull(jsonObject.get(EventConstants.EVENT_OS)));
+        }
     }
 
     /**

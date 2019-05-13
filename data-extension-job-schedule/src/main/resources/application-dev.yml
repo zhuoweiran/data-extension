@@ -4,7 +4,7 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://172.16.140.153:9200/hjwindex_test
+  url: http://172.16.140.153:9200/commpair_alarm
 escluster:
   cluster: es_nfdw
   nodes: zdbd01,zdbd02,zdbd03
