@@ -25,7 +25,7 @@ public class ResourceUtil {
         Properties props = new Properties();
         String os = System.getProperty("os.name");
         if(os.toLowerCase().startsWith("win")) {
-            filename = "data-extension-job-schedule/src/main/resources/"+filename;
+            filename = "src/main/resources/"+filename;
             String pathName = new File("").getAbsolutePath();
             InputStream is = null ;
             try{

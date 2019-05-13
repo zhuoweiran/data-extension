@@ -37,11 +37,11 @@ public class CommunicationAlarmJob {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
                 String srcIpSumQueryStr = getSrcIpSumQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
+                Long cycle = (ruleValueMap.get("rangValue")/1000/60);
                 logger.info("#############srcIp在"+(ruleValueMap.get("rangValue")/1000/60)+"分钟内发起"+ruleValueMap.get("thresholdValue")+"次访问 job正在执行########");
                 JSONObject srcIpSumJson = metadataService.getResultByHttp(srcIpSumQueryStr);
-                System.out.println("srcIp在t分钟内发起n次访问统计结果：srcIpSumJson="+srcIpSumJson);
                 if(srcIpSumJson != null && srcIpSumJson.size()>0){
-                    metadataService.handleSrcIpSumData(srcIpSumJson);
+                    metadataService.handleSrcIpSumData(ruleValueMap.get("thresholdValue"),cycle,srcIpSumJson);
                 }
             }
         } catch (Exception e) {
@@ -59,11 +59,12 @@ public class CommunicationAlarmJob {
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
+                Long cycle = (ruleValueMap.get("rangValue")/1000/60);
                 logger.info("&&&&&&&&&&srcIp在"+(ruleValueMap.get("rangValue")/1000/60)+"分钟内访问了"+ruleValueMap.get("thresholdValue")+"个destIp 正在执行&&&&&&&&");
                 String srcIpAndDestIpCountQueryStr = getSrcIpAndDestIpCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestIpCountJson = metadataService.getResultByHttp(srcIpAndDestIpCountQueryStr);
                 if(srcIpAndDestIpCountJson != null && srcIpAndDestIpCountJson.size()>0){
-                    metadataService.handleSrcIpAndDestIpCountData(srcIpAndDestIpCountJson);
+                    metadataService.handleSrcIpAndDestIpCountData(ruleValueMap.get("thresholdValue"),cycle,srcIpAndDestIpCountJson);
                 }
             }
         } catch (Exception e) {
@@ -73,7 +74,7 @@ public class CommunicationAlarmJob {
     }
 
     /**
-     * 3.srcIp在t分钟内访问destIp的n个端口
+     * 3.srcIp在t分钟内访问同一destIp的n个端口
      */
     public void executeSrcIpAndDestPortCountTask() {
         try {
@@ -81,11 +82,12 @@ public class CommunicationAlarmJob {
             if (dataList != null && dataList.size() > 0) {
                 Map<String, Long> ruleValueMap = getRuleValue(dataList);
                 Map<String, Date> ranTimeMap = getRangTime(ruleValueMap.get("rangValue"));
+                Long cycle = (ruleValueMap.get("rangValue")/1000/60);
                 logger.info("********srcIp在"+(ruleValueMap.get("rangValue")/1000/60)+"分钟内访问destIp的"+ruleValueMap.get("thresholdValue")+"个端口 正在执行********");
-                String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr(ruleValueMap.get("thresholdValue"), ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
+                String srcIpAndDestPortCountQueryStr = getSrcIpAndDestPortCountQueryStr(ranTimeMap.get("startDelayTime"), ranTimeMap.get("endDelayDate"));
                 JSONObject srcIpAndDestPortCountJson = metadataService.getResultByHttp(srcIpAndDestPortCountQueryStr);
                 if(srcIpAndDestPortCountJson != null && srcIpAndDestPortCountJson.size()>0){
-                    metadataService.handleSrcIpAndDestPortCountData(srcIpAndDestPortCountJson);
+                    metadataService.handleSrcIpAndDestPortCountData(ruleValueMap.get("thresholdValue"),cycle, srcIpAndDestPortCountJson);
                 }
             }
         } catch (Exception e) {
@@ -125,22 +127,22 @@ public class CommunicationAlarmJob {
                 "                        }\n" +
                 "                    },\n" +
                 "                    \"terms\": {\n" +
-                "                        \"field\": \"srcIp\"\n" +
+                "                        \"field\": \"srcIp.keyword\"\n" +
                 "                    }\n" +
                 "                }\n" +
                 "            },\n" +
                 "            \"terms\": {\n" +
-                "                \"field\": \"deviceGUID\"\n" +
+                "                \"field\": \"dcdGuid.keyword\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"sessionStartTime\": {\n" +
-//                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
-//                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
+                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
+//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
+//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -166,7 +168,7 @@ public class CommunicationAlarmJob {
                 "                    \"aggs\": {\n" +
                 "                        \"destIpCount\": {\n" +
                 "                            \"terms\": {\n" +
-                "                                \"field\": \"destIp\"\n" +
+                "                                \"field\": \"destIp.keyword\"\n" +
                 "                            }\n" +
                 "                        },\n" +
                 "                        \"having\": {\n" +
@@ -181,22 +183,22 @@ public class CommunicationAlarmJob {
                 "                        }\n" +
                 "                    },\n" +
                 "                    \"terms\": {\n" +
-                "                        \"field\": \"srcIp\"\n" +
+                "                        \"field\": \"srcIp.keyword\"\n" +
                 "                    }\n" +
                 "                }\n" +
                 "            },\n" +
                 "            \"terms\": {\n" +
-                "                \"field\": \"deviceGUID\"\n" +
+                "                \"field\": \"dcdGuid.keyword\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"sessionStartTime\": {\n" +
-//                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
-//                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
+                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
+//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
+//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -206,14 +208,13 @@ public class CommunicationAlarmJob {
     }
 
     /**
-     * (3)组装 srcIp在t分钟内访问destIp的n个端口 查询条件
+     * (3)组装 srcIp在t分钟内访问同一destIp的n个端口 查询条件
      *
-     * @param thresholdValue 阈值
      * @param startTime      开始时间
      * @param endTime        结束时间
      * @return
      */
-    private String getSrcIpAndDestPortCountQueryStr(Long thresholdValue, Date startTime, Date endTime) throws Exception {
+    private String getSrcIpAndDestPortCountQueryStr(Date startTime, Date endTime) throws Exception {
         String queryStr = "{\n" +
                 "    \"aggs\": {\n" +
                 "        \"deviceGUIDCount\": {\n" +
@@ -221,45 +222,35 @@ public class CommunicationAlarmJob {
                 "                \"srcIpCount\": {\n" +
                 "                    \"aggs\": {\n" +
                 "                        \"destIpCount\": {\n" +
-                "                            \"aggs\": {\n" +
+                "\t\t\t\t\t\t  \"aggs\": {\n" +
                 "                                \"destPortCount\": {\n" +
                 "                                    \"terms\": {\n" +
-                "                                        \"field\": \"destPort\"\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"having\": {\n" +
-                "                                    \"bucket_selector\": {\n" +
-                "                                        \"buckets_path\": {\n" +
-                "                                            \"destIpCount\": \"_count\"\n" +
-                "                                        },\n" +
-                "                                        \"script\": {\n" +
-                "                                            \"source\": \"params.destIpCount >= " + thresholdValue + "\"\n" +
-                "                                        }\n" +
+                "                                        \"field\": \"destPort.keyword\"\n" +
                 "                                    }\n" +
                 "                                }\n" +
                 "                            },\n" +
                 "                            \"terms\": {\n" +
-                "                                \"field\": \"destIp\"\n" +
+                "                                \"field\": \"destIp.keyword\"\n" +
                 "                            }\n" +
                 "                        }\n" +
                 "                    },\n" +
                 "                    \"terms\": {\n" +
-                "                        \"field\": \"srcIp\"\n" +
+                "                        \"field\": \"srcIp.keyword\"\n" +
                 "                    }\n" +
                 "                }\n" +
                 "            },\n" +
                 "            \"terms\": {\n" +
-                "                \"field\": \"deviceGUID\"\n" +
+                "                \"field\": \"dcdGuid.keyword\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
                 "    \"query\": {\n" +
                 "        \"range\": {\n" +
                 "            \"sessionStartTime\": {\n" +
-//                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
-//                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+                "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
+                "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
+//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
+//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
