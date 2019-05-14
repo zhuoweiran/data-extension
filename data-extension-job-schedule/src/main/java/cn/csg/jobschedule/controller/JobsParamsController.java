@@ -2,6 +2,7 @@ package cn.csg.jobschedule.controller;
 
 import cn.csg.common.ResultData;
 import cn.csg.common.ResultStatus;
+import cn.csg.common.enums.ExplodeType;
 import cn.csg.common.enums.RuleKeyEnum;
 import cn.csg.common.enums.StatusEnum;
 import cn.csg.common.vo.ExplodeVo;
@@ -46,6 +47,18 @@ public class JobsParamsController {
             Integer window,
             Integer target
     ){
+        for(String key : ExplodeType.EXPLODE_MAP.keySet()) {
+            explodeService.save(
+                    new ExplodeVo(
+                            ExplodeType.EXPLODE_MAP.get(key).getName(),
+                            Arrays.asList(
+                                    RuleVo.put(RuleKeyEnum.WINDOWN.getKey(), BigDecimal.valueOf(window)),
+                                    RuleVo.put(RuleKeyEnum.TARGET.getKey(), BigDecimal.valueOf(target))
+                            )
+                    )
+            );
+        }
+
         return new ResultData<>(
                 explodeService.save(
                         new ExplodeVo(
