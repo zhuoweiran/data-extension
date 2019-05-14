@@ -4,14 +4,16 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://172.16.140.153:9200/hjwindex_test
+  url: http://172.16.140.153:9200/commpair_alarm
 escluster:
   cluster: es_nfdw
   nodes: zdbd01,zdbd02,zdbd03
   port: 9300
-  communicationalarm:
+  type: default
+  commpair_alarm:
+    index: commpair_alarm
+  security_policy:
     index: communicationalarm
-    type: default
 spring:
   data:
     elasticsearch:

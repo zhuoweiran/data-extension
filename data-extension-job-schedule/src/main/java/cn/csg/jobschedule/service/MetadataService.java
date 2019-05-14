@@ -1,11 +1,11 @@
 package cn.csg.jobschedule.service;
 
 import cn.csg.jobschedule.constants.DatetimeConstants;
+import cn.csg.jobschedule.constants.EventConstants;
+import cn.csg.jobschedule.constants.EventTypeAndTag;
+import cn.csg.jobschedule.constants.SymbolsConstants;
 import cn.csg.jobschedule.dao.ElasticsearchDao;
-import cn.csg.jobschedule.util.DatetimeUtil;
-import cn.csg.jobschedule.util.ESUtil;
-import cn.csg.jobschedule.util.EsConnectionPool;
-import cn.csg.jobschedule.util.IDUtil;
+import cn.csg.jobschedule.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -46,11 +46,14 @@ public class MetadataService {
     @Value("${escluster.port}")
     private String esClusterPort;
 
-    @Value("${escluster.communicationalarm.index}")
-    private String communicationalarmIndex;
+    @Value("${escluster.commpair_alarm.index}")
+    private String commpairAlarmIndex;
 
-    @Value("${escluster.communicationalarm.type}")
-    private String communicationalarmType;
+    @Value("${escluster.type}")
+    private String type;
+
+    @Value("${escluster.security_policy.index}")
+    private String securityPolicyIndex;
 
     /**
      * 根据告警规则名称获取告警统计规则
@@ -70,21 +73,28 @@ public class MetadataService {
      * @return
      */
     public JSONObject getResultByHttp(String queryStr) throws Exception{
-        return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
+
+        if(isIndexExisys(commpairAlarmIndex)){
+            return elasticsearchDao.requestMyTest(JSONObject.parseObject(queryStr));
+        }
+        return null;
     }
 
     //srcIp在t分钟内发起n次访问
-    public void handleSrcIpSumData(JSONObject jsonObj){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    public void handleSrcIpSumData(Long thresholdValue,Long cycle,JSONObject jsonObj){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 try {
+                    //初始化参数
+                    EventTypeAndTag.init();
+
                     Map aggregationsMap = (Map)jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map)aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List)corpIdCountMap.get("buckets");
+                    Map deviceGUIDCountMap = (Map)aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List)deviceGUIDCountMap.get("buckets");
                     if(buckets != null && buckets.size() > 0){
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -92,27 +102,47 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for(Map corpIdGroupMap : buckets){
+                        for(Map deviceGUIDGroupMap : buckets){
 
-                            String conrpId = corpIdGroupMap.get("key")+"";
-                            Map srcIpCountMap = (Map)corpIdGroupMap.get("srcIpCount");
+                            String deviceGUID = deviceGUIDGroupMap.get("key")+"";
+                            Map srcIpCountMap = (Map)deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> sumResultBuckets = (List)srcIpCountMap.get("buckets");
                             if(sumResultBuckets != null && sumResultBuckets.size() > 0){
                                 for(Map sumResultMap : sumResultBuckets){
                                     String srcIp = sumResultMap.get("key")+"";
-                                    Map doubleCountSumMap = (Map)sumResultMap.get("doubleCountSum");
-                                    Double countData = (Double) doubleCountSumMap.get("value");
 
-                                    JSONObject countDataToEsJson = new JSONObject();
+                                    //添加资产信息
+                                    JedisClient jedisClient = new JedisClient();
+                                    String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                    Map<String, Object> map = new HashMap();
+                                    DeviceUtils.deviceStrAddToMap(map,  deviceBean);
+                                    //获取corpId
+                                    int idx = deviceGUID.indexOf(SymbolsConstants.HorizontalBar);
+                                    String corpId = deviceGUID.substring(0, idx);
+                                    map.put("corpId", corpId);
+                                    //添加组织机构信息
+                                    String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                    DeviceUtils.corpAddToMap(map, corporationBean);
+
+
                                     String id = IDUtil.getUUID();
-                                    countDataToEsJson.put("id", id);
-                                    countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createDateStr);
-                                    countDataToEsJson.put("srcIp",srcIp);
-                                    countDataToEsJson.put("countData",countData);
-                                    countDataToEsJson.put("alarmType","爆发式通信对告警");
-                                    countDataToEsJson.put("alarmLevel","紧急");
-                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    map.put("id", id);
+                                    map.put("devGuid","");
+                                    map.put("dcdGuid",deviceGUID);
+                                    map.put("processTime", createDateStr);
+                                    map.put("timestamp",""+new Date().getTime());
+                                    map.put("discoverTime",createDateStr);
+                                    map.put("sessionStartTime",createDateStr);
+                                    map.put("srcIp",srcIp);
+                                    map.put("destIp","");
+                                    putDataMap(map);
+
+                                    bulkRequest.add(client.prepareIndex("security_policy-hjw", type, id).setSource(map));
+                                    //转发至告警
+                                    String alarm = "{\"Header\":{\"DcdGuid\":\""+deviceGUID+"\",\"DevGuid\":\""+deviceGUID+"\",\"Sid\":\""+id+"\",\"Timestamp\":\""+Long.valueOf(map.get("timestamp")+"")+"\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\""+map.get("processTime")+"\",\"Details\":{\"ExplType\":\"1\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\""+thresholdValue+"\",\"Cycle\":\""+cycle+"\",\"Partition\":\""+map.get("securityPartition")+"\"}}}";
+                                    BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                                    producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                                    producer.flush();
                                 }
                             }
                         }
@@ -124,22 +154,24 @@ public class MetadataService {
                     logger.error("处理 srcIp在t分钟内发起n次访问 异常:"+e.getMessage());
                 }
 
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     //srcIp在t分钟内访问了n个destIp
-    public void handleSrcIpAndDestIpCountData(JSONObject jsonObj) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    public void handleSrcIpAndDestIpCountData(Long thresholdValue,Long cycle,JSONObject jsonObj) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 try {
+                    //初始化参数
+                    EventTypeAndTag.init();
                     Map aggregationsMap = (Map) jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List) corpIdCountMap.get("buckets");
+                    Map deviceGUIDMap = (Map) aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List) deviceGUIDMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -147,9 +179,9 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for (Map corpIdGroupMap : buckets) {
-                            String conrpId = corpIdGroupMap.get("key") + "";
-                            Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
+                        for (Map deviceGUIDGroupMap : buckets) {
+                            String deviceGUID = deviceGUIDGroupMap.get("key") + "";
+                            Map srcIpCountMap = (Map) deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> srcIpCountResultList = (List) srcIpCountMap.get("buckets");
                             if (srcIpCountResultList != null && srcIpCountResultList.size() > 0) {
                                 for (Map srcIpCountResultMap : srcIpCountResultList) {
@@ -157,22 +189,36 @@ public class MetadataService {
                                     Integer countData = (Integer) srcIpCountResultMap.get("doc_count");
                                     Map destIpCountMap = (Map) srcIpCountResultMap.get("destIpCount");
                                     List<Map> destIpCountList = (List) destIpCountMap.get("buckets");
-                                    List destIpList = new ArrayList();
-                                    for (Map destIpMap : destIpCountList) {
-                                        destIpList.add(destIpMap.get("key"));
-                                    }
-//                            System.out.println("conrpId=" + conrpId + ";srcIp=" + srcIp + ";countData=" + countData + ";destIpList=" + destIpList);
-                                    JSONObject countDataToEsJson = new JSONObject();
+                                    //添加资产信息
+                                    JedisClient jedisClient = new JedisClient();
+                                    String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                    Map<String, Object> map = new HashMap();
+                                    DeviceUtils.deviceStrAddToMap(map,  deviceBean);
+                                    //获取corpId
+                                    int idx = deviceGUID.indexOf(SymbolsConstants.HorizontalBar);
+                                    String corpId = deviceGUID.substring(0, idx);
+                                    map.put("corpId", corpId);
+                                    //添加组织机构信息
+                                    String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                    DeviceUtils.corpAddToMap(map, corporationBean);
                                     String id = IDUtil.getUUID();
-                                    countDataToEsJson.put("id", id);
-                                    countDataToEsJson.put("conrpId",conrpId);
-                                    countDataToEsJson.put("createTime", createDateStr);
-                                    countDataToEsJson.put("srcIp",srcIp);
-                                    countDataToEsJson.put("countData",countData);
-                                    countDataToEsJson.put("destIpList",destIpList);
-                                    countDataToEsJson.put("alarmType","爆发式通信对告警");
-                                    countDataToEsJson.put("alarmLevel","紧急");
-                                    bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
+                                    map.put("id", id);
+                                    map.put("devGuid","");
+                                    map.put("dcdGuid",deviceGUID);
+                                    map.put("processTime", createDateStr);
+                                    map.put("timestamp",""+new Date().getTime());
+                                    map.put("discoverTime",createDateStr);
+                                    map.put("sessionStartTime",createDateStr);
+                                    map.put("srcIp",srcIp);
+                                    map.put("destIp","");
+                                    putDataMap(map);
+                                    bulkRequest.add(client.prepareIndex("security_policy-hjw", type, id).setSource(map));
+
+                                    //转发至告警
+                                    String alarm = "{\"Header\":{\"DcdGuid\":\""+deviceGUID+"\",\"DevGuid\":\""+deviceGUID+"\",\"Sid\":\""+id+"\",\"Timestamp\":\""+Long.valueOf(map.get("timestamp")+"")+"\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\""+map.get("processTime")+"\",\"Details\":{\"ExplType\":\"2\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\""+thresholdValue+"\",\"Cycle\":\""+cycle+"\",\"Partition\":\""+map.get("securityPartition")+"\"}}}";
+                                    BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                                    producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                                    producer.flush();
                                 }
                             }
                         }
@@ -183,22 +229,24 @@ public class MetadataService {
                     logger.error("处理 srcIp在t分钟内访问了n个destIp 异常:" + e.getMessage());
                 }
 
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     //srcIp在t分钟内访问destIp的n个端口
-    public void handleSrcIpAndDestPortCountData(JSONObject jsonObj) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    public void handleSrcIpAndDestPortCountData(Long thresholdValue,Long cycle, JSONObject jsonObj) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 try {
+                    //初始化参数
+                    EventTypeAndTag.init();
                     Map aggregationsMap = (Map) jsonObj.get("aggregations");
-                    Map corpIdCountMap = (Map) aggregationsMap.get("corpIdCount");
-                    List<Map> buckets = (List) corpIdCountMap.get("buckets");
+                    Map deviceGUIDCountMap = (Map) aggregationsMap.get("deviceGUIDCount");
+                    List<Map> buckets = (List) deviceGUIDCountMap.get("buckets");
                     if (buckets != null && buckets.size() > 0) {
                         String date = DatetimeUtil.getFirstDayOfWeek(new Date(), DatetimeConstants.YYYYMMDD);
-                        String index = communicationalarmIndex+date;
+                        String index = securityPolicyIndex+date;
                         EsConnectionPool esConnectionPool = EsConnectionPool.getInstance(esClusterNodes,
                                 Integer.parseInt(esClusterPort),esClusterName) ;
                         TransportClient client = esConnectionPool.getClient();
@@ -206,41 +254,57 @@ public class MetadataService {
                         Date createTime =  DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
                         String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
-                        for (Map corpIdGroupMap : buckets) {
-                            String conrpId = corpIdGroupMap.get("key") + "";
-                            Map srcIpCountMap = (Map) corpIdGroupMap.get("srcIpCount");
+                        for (Map deviceGUIDGroupMap : buckets) {
+                            String deviceGUID = deviceGUIDGroupMap.get("key") + "";
+                            Map srcIpCountMap = (Map) deviceGUIDGroupMap.get("srcIpCount");
                             List<Map> srcIpCountResultList = (List) srcIpCountMap.get("buckets");
                             if (srcIpCountResultList != null && srcIpCountResultList.size() > 0) {
                                 for (Map srcIpCountResultMap : srcIpCountResultList) {
                                     String srcIp = srcIpCountResultMap.get("key") + "";
                                     Map destIpCountMap = (Map) srcIpCountResultMap.get("destIpCount");
                                     List<Map> destIpCountBuckets = (List) destIpCountMap.get("buckets");
-                                    if(destIpCountBuckets != null && destIpCountBuckets.size() > 0){
-                                        for(Map destIpResultMap : destIpCountBuckets){
+                                    if(destIpCountBuckets != null && destIpCountBuckets.size() > 0) {
+                                        for (Map destIpResultMap : destIpCountBuckets) {
                                             String destIp = destIpResultMap.get("key")+"";
-                                            Integer countData = (Integer)destIpResultMap.get("doc_count");
                                             Map destPortCount = (Map)destIpResultMap.get("destPortCount");
                                             List<Map> destPortBuckets = (List)destPortCount.get("buckets");
-                                            List destPortList = new ArrayList();
-                                            for(Map destPortMap : destPortBuckets){
-                                                destPortList.add(destPortMap.get("key"));
+//                                            if(destPortBuckets.size()>=thresholdValue){
+                                                if(destPortBuckets.size()>=1){
+                                                //添加资产信息
+                                                JedisClient jedisClient = new JedisClient();
+                                                String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                                Map<String, Object> map = new HashMap();
+                                                DeviceUtils.deviceStrAddToMap(map,  deviceBean);
+                                                //获取corpId
+                                                int idx = deviceGUID.indexOf(SymbolsConstants.HorizontalBar);
+                                                String corpId = deviceGUID.substring(0, idx);
+                                                map.put("corpId", corpId);
+                                                //添加组织机构信息
+                                                String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                                DeviceUtils.corpAddToMap(map, corporationBean);
+
+
+                                                String id = IDUtil.getUUID();
+                                                map.put("id", id);
+                                                map.put("dcdGuid",deviceGUID);
+                                                map.put("devGuid","");
+                                                map.put("processTime", createDateStr);
+                                                map.put("timestamp",""+new Date().getTime());
+                                                map.put("discoverTime",createDateStr);
+                                                map.put("sessionStartTime",createDateStr);
+                                                map.put("srcIp",srcIp);
+                                                map.put("destIp",destIp);
+                                                putDataMap(map);
+
+                                                bulkRequest.add(client.prepareIndex("security_policy-hjw", type, id).setSource(map));
+                                                //转发到告警
+                                                String alarm = "{\"Header\":{\"DcdGuid\":\""+deviceGUID+"\",\"DevGuid\":\""+deviceGUID+"\",\"Sid\":\""+id+"\",\"Timestamp\":\""+Long.valueOf(map.get("timestamp")+"")+"\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\""+map.get("processTime")+"\",\"Details\":{\"ExplType\":\"3\", \"ClientIp\":\""+srcIp+"\",\"ServerIp\":\""+destIp+"\",\"Threshold\":\""+thresholdValue+"\",\"Cycle\":\""+cycle+"\",\"Partition\":\""+map.get("securityPartition")+"\"}}}";
+                                                BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                                                producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                                                producer.flush();
                                             }
-//                                            System.out.println("conrpId="+conrpId+";srcIp="+srcIp+";destIp="+destIp+";countData="+countData+";destPortList="+destPortList);
-                                            JSONObject countDataToEsJson = new JSONObject();
-                                            String id = IDUtil.getUUID();
-                                            countDataToEsJson.put("id", id);
-                                            countDataToEsJson.put("conrpId",conrpId);
-                                            countDataToEsJson.put("createTime", createDateStr);
-                                            countDataToEsJson.put("srcIp",srcIp);
-                                            countDataToEsJson.put("countData",countData);
-                                            countDataToEsJson.put("destIp",destIp);
-                                            countDataToEsJson.put("destPortList",destPortList);
-                                            countDataToEsJson.put("alarmType","爆发式通信对告警");
-                                            countDataToEsJson.put("alarmLevel","紧急");
-                                            bulkRequest.add(client.prepareIndex(index, communicationalarmType, id).setSource(countDataToEsJson));
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -248,23 +312,32 @@ public class MetadataService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.error("处理 srcIp在t分钟内访问destIp的n个端口 异常:" + e.getMessage());
+                    logger.error("处理 srcIp在t分钟内访问同一destIp的n个端口 异常:" + e.getMessage());
                 }
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
+    /**
+     * 判断ES索引是否存在
+     * @param index 索引名称
+     * @return true 存在；false 不存在
+     * @throws Exception
+     */
+    private boolean isIndexExisys(String index) throws Exception{
+        IndicesExistsRequest inExistsRequest = new IndicesExistsRequest(new String[]{index});
+        return elasticsearchTemplate.getClient().admin().indices().exists(inExistsRequest).actionGet().isExists();
+
+    }
 
     public String getMetadata(){
 //        Client transportClient = elasticsearchTemplate.getClient();
 //        IndexResponse response = transportClient.prepareIndex("metadata20190418","default").setSource()
 //                .execute().actionGet();
-//        System.out.println("从ES中查询的数据-----》"+response.toString());
 //        transportClient.close();
         //判断索引是否存在 start
         IndicesExistsRequest inExistsRequest = new IndicesExistsRequest(new String[]{"metadata20190418"});
         boolean flag = elasticsearchTemplate.getClient().admin().indices().exists(inExistsRequest).actionGet().isExists();
-        System.out.println("索引是否存在flag----》"+flag);
         //判断索引是否存在 end
         SearchRequestBuilder requestBuilder =elasticsearchTemplate.getClient().prepareSearch("metadata20190418").setTypes("default");
         //过滤条件 start
@@ -272,6 +345,25 @@ public class MetadataService {
         SearchResponse response = requestBuilder.execute().actionGet();
 
         return response.toString();
+    }
+
+    public static void putDataMap(Map map)throws Exception{
+        map.put("severity","");
+        map.put("appName","");
+        map.put("srcDeviceGUID","");
+        map.put("destCorpId","");
+        map.put("srcMac","");
+        map.put("destDeviceGUID","");
+        map.put("srcPort","");
+        map.put("source","");
+        map.put("detailType","");
+        map.put("protocol","");
+        map.put("destPort","");
+        map.put("tag","");
+        map.put("destMac","");
+        map.put("alarmType","0");
+        map.put("eventCode","01");
+        map.put("status",0);
     }
 
 }
