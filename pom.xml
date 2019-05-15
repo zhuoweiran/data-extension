@@ -7,7 +7,7 @@
     <groupId>cn.csg</groupId>
     <artifactId>data-extension</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
         <module>data-extension-api</module>
         <module>data-extension-core</module>
@@ -18,7 +18,7 @@
     <properties>
         <fastjson.version>1.2.10</fastjson.version>
         <spring.boot.vresion>2.1.0.RELEASE</spring.boot.vresion>
-        <de.version>1.0-SNAPSHOT</de.version>
+        <de.version>1.0</de.version>
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
