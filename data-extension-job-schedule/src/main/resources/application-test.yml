@@ -1,4 +1,4 @@
-# 105开发环境
+# 417测试环境
 server:
   port: 8082
   servlet:
@@ -30,4 +30,4 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://zdbd02:3306/data_extension?characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://zdbd03:3306/data_extension?characterEncoding=utf8
