@@ -5,10 +5,10 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://zdbd03:9200/commpair_alarm
+  url: http://iii-wabd-004:9200/commpair_alarm
 escluster:
   cluster: es_nfdw
-  nodes: zdbd01,zdbd02,zdbd03
+  nodes: iii-wabd-003,iii-wabd-004,iii-wabd-005,iii-wabd-006
   port: 9300
   type: default
   commpair_alarm:
@@ -19,7 +19,7 @@ spring:
   data:
     elasticsearch:
       cluster-name: es_nfdw
-      cluster-nodes: zdbd01:9300,zdbd02:9300,zdbd03:9300
+      cluster-nodes: iii-wabd-003:9300,iii-wabd-004:9300,iii-wabd-005:9300,iii-wabd-006:9300
       repositories:
         enable: true
   jpa:
@@ -29,5 +29,5 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
-    url: jdbc:mysql://zdbd02:3306/data_extension?characterEncoding=utf8&useSSL=true
+    password: aling1994
+    url: jdbc:mysql://iii-wabd-001:3306/data_extension?characterEncoding=utf8
