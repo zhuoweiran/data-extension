@@ -141,8 +141,8 @@ public class CommunicationAlarmJob {
                 "            \"sessionStartTime\": {\n" +
                 "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
                 "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+//                "                \"gte\": \"2018-09-27T08:00:00+08:00\",\n" +
+//                "                \"lt\": \"2018-09-27T20:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -197,8 +197,8 @@ public class CommunicationAlarmJob {
                 "            \"sessionStartTime\": {\n" +
                 "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
                 "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+//                "                \"gte\": \"2018-09-27T08:00:00+08:00\",\n" +
+//                "                \"lt\": \"2018-09-27T20:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
@@ -249,8 +249,8 @@ public class CommunicationAlarmJob {
                 "            \"sessionStartTime\": {\n" +
                 "                \"gte\": \"" + DatetimeUtil.toStr(startTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\",\n" +
                 "                \"lt\": \"" + DatetimeUtil.toStr(endTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX) + "\"\n" +
-//                "                \"gte\": \"2019-04-24T15:00:00+08:00\",\n" +
-//                "                \"lt\": \"2019-04-24T16:00:00+08:00\"\n" +
+//                "                \"gte\": \"2018-09-27T08:00:00+08:00\",\n" +
+//                "                \"lt\": \"2018-09-27T20:00:00+08:00\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    },\n" +
