@@ -1,5 +1,6 @@
 package cn.csg.jobschedule.util;
 
+import cn.csg.jobschedule.config.JedisConfig;
 import io.codis.jodis.RoundRobinJedisPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,35 +21,17 @@ public class JedisConnectionPool implements Serializable{
 
     protected static RoundRobinJedisPool jedisPool = null;
 
-//    protected static Jedis jedis = null ;
 
-    private static Properties props = ResourceUtil.load("redis.properties");
-
-    /**
-     * Jedis初始化
-     */
-    static {
-        init();
-    }
-
-    private static void init() {
-        String zkConnectHost = props.getProperty("jedis.zk.connect.host") ;
-        int zkSessionTimeout = Integer.valueOf(props.getProperty("jedis.zk.session.timeout"));
-        String zkProxyDir = props.getProperty("jedis.zk.proxy.dir");
-        String sessionAuth = props.getProperty("jedis.session.auth");
-        int database = Integer.valueOf(props.getProperty("jedis.database"));
-        int jedis_connection_timeout_ms = Integer.valueOf(props.getProperty("jedis.connection.timeout"));
-        int jedis_sotimeout_ms = Integer.valueOf(props.getProperty("jedis.sotimeout"));
-
+    private static void init(JedisConfig jedisConfig) {
         try {
             jedisPool = RoundRobinJedisPool.create().
-                    curatorClient(zkConnectHost, zkSessionTimeout)
-                    .zkProxyDir(zkProxyDir)
-                    .poolConfig(getJedisPoolConfig(props))
-                    .connectionTimeoutMs(jedis_connection_timeout_ms)
-                    .soTimeoutMs(jedis_sotimeout_ms)
-                    .password(sessionAuth)
-                    .database(database)
+                    curatorClient(jedisConfig.getZkConnectHost(), jedisConfig.getZkSessionTimeout())
+                    .zkProxyDir(jedisConfig.getZkProxyDir())
+                    .poolConfig(getJedisPoolConfig(jedisConfig))
+                    .connectionTimeoutMs(jedisConfig.getJedis_connection_timeout_ms())
+                    .soTimeoutMs(jedisConfig.getJedis_sotimeout_ms())
+                    .password(jedisConfig.getSessionAuth())
+                    .database(jedisConfig.getDatabase())
                     .build();
         } catch (Exception e) {
             logger.error("jedisPool init failed!");
@@ -61,20 +44,13 @@ public class JedisConnectionPool implements Serializable{
      * jedis连接池配置
      * @return
      */
-    private static JedisPoolConfig getJedisPoolConfig(Properties props) {
-        int maxTotal = Integer.valueOf(props.getProperty("jedis.maxTotal"));
-        int maxIdle = Integer.valueOf(props.getProperty("jedis.maxIdle"));
-        int minIdle = Integer.valueOf(props.getProperty("jedis.minIdle"));
-        int maxWaitMillis = Integer.valueOf(props.getProperty("jedis.maxWaitMillis"));
-        int softMinEvictableIdleTimeMillis = Integer.valueOf(props.getProperty("jedis.softMinEvictableIdleTimeMillis"));
-
-
+    private static JedisPoolConfig getJedisPoolConfig(JedisConfig jedisConfig) {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(maxTotal);
-        config.setMaxIdle(maxIdle);
-        config.setMinIdle(minIdle);
-        config.setMaxWaitMillis(maxWaitMillis);
-        config.setSoftMinEvictableIdleTimeMillis(softMinEvictableIdleTimeMillis);
+        config.setMaxTotal(jedisConfig.getMaxTotal());
+        config.setMaxIdle(jedisConfig.getMaxIdle());
+        config.setMinIdle(jedisConfig.getMinIdle());
+        config.setMaxWaitMillis(jedisConfig.getMaxWaitMillis());
+        config.setSoftMinEvictableIdleTimeMillis(jedisConfig.getSoftMinEvictableIdleTimeMillis());
         //新增
         //在borrow一个jedis实例时，是否提前进行alidate操作；如果为true，则得到的jedis实例均是可用的；
         config.setTestOnBorrow(true);
@@ -88,7 +64,7 @@ public class JedisConnectionPool implements Serializable{
      * 获取Jedis实例
      * @return
      */
-    public synchronized static Jedis getJedis() {
+    public synchronized static Jedis getJedis(JedisConfig jedisConfig) {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
@@ -96,7 +72,7 @@ public class JedisConnectionPool implements Serializable{
             logger.error("JedisConnectionPool异常："+e.getMessage());
             logger.error("JedisConnectionPool连接池断开，尝试进行重连！！！");
             try {
-                init();
+                init(jedisConfig);
                 jedis = jedisPool.getResource();
             } catch (Exception e2){
                 logger.error("JedisConnectionPool尝试进行重连失败！！！");
