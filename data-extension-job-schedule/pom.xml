@@ -112,18 +112,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--kafka start-->
         <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
-            <version>2.2.0</version>
-            <!--<scope>provided</scope>-->
-            <exclusions>
-                <exclusion>
-                    <artifactId>com.google.guava</artifactId>
-                    <groupId>guava</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <!--<version>0.10.2.0</version>-->
+            <!--<version>0.10.1.1</version>-->
+            <version>0.10.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.11</artifactId>
+            <!--<version>0.10.2.0</version>-->
+            <!--<version>0.10.1.1</version>-->
+            <version>0.10.0.1</version>
+        </dependency>
+        <!--kafka end-->
         <!--<dependency>-->
             <!--<groupId>org.springframework.data</groupId>-->
             <!--<artifactId>spring-data-redis</artifactId>-->
