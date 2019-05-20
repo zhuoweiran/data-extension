@@ -1,5 +1,6 @@
 package cn.csg.jobschedule.util;
 
+import cn.csg.jobschedule.config.JedisConfig;
 import cn.csg.jobschedule.constants.RedisConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,9 @@ public class JedisClient implements Serializable{
     private final static Logger logger = LoggerFactory.getLogger(JedisClient.class);
     private static Jedis jedis = null ;
 
-    public JedisClient(){
+    public JedisClient(JedisConfig jedisConfig){
 //        if (jedis == null) {
-            jedis = JedisConnectionPool.getJedis();
+            jedis = JedisConnectionPool.getJedis(jedisConfig);
 //        }
     }
 
@@ -214,11 +215,11 @@ public class JedisClient implements Serializable{
         //System.out.println(new JedisConnectionPool().get(8,"a"));
 
         //new JedisConnectionPool().incrThreateventTotalCount() ;
-
-        for(int i = 0 ;i<10000 ;i++){
-            System.out.println(i);
-            new JedisClient().incrThreateventTotalCount();
-        }
+//        JedisConfig jedisConfig = new JedisConfig();
+//        for(int i = 0 ;i<10000 ;i++){
+//            System.out.println(i);
+//            new JedisClient(jedisConfig).incrThreateventTotalCount();
+//        }
 
     }
 

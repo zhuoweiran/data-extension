@@ -31,3 +31,33 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://zdbd02:3306/data_extension?characterEncoding=utf8&useSSL=true
+jedis:
+  database: 0
+  zk:
+    connect:
+      host: zdbd01:2181,zdbd02:2181,zdbd03:2181
+    session:
+      timeout: 5000
+    proxy:
+      dir: /jodis/codis-test1
+  session:
+    auth: 123456
+  connection:
+    timeout: 2000
+  sotimeout: 2000
+  maxTotal: 1000
+  maxIdle: 10
+  minIdle: 3
+  maxWaitMillis: 10000
+  softMinEvictableIdleTimeMillis: 5000
+redis:
+  key:
+    event:
+      zz:
+        device: deviceInfoGuidbd
+        devicetmp: deviceTmpInfoLidbd
+        corporation: ui_corporationbd
+kafka:
+  producer:
+    alarms:
+      topic: alarms2

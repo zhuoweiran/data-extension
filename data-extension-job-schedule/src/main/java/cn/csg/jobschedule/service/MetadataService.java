@@ -1,8 +1,7 @@
 package cn.csg.jobschedule.service;
 
+import cn.csg.jobschedule.config.JedisConfig;
 import cn.csg.jobschedule.constants.DatetimeConstants;
-import cn.csg.jobschedule.constants.EventConstants;
-import cn.csg.jobschedule.constants.EventTypeAndTag;
 import cn.csg.jobschedule.constants.SymbolsConstants;
 import cn.csg.jobschedule.dao.ElasticsearchDao;
 import cn.csg.jobschedule.util.*;
@@ -56,6 +55,60 @@ public class MetadataService {
     private String securityPolicyIndex;
 
     /**
+     * redis的数据库
+     */
+    @Value("${jedis.database}")
+    private int REDISDBINDEX ;
+
+    /**
+     * 主站已知资产KEY
+     */
+    @Value("${redis.key.event.zz.device}")
+    private  String ZZDEVICEKEY;
+
+    /**
+     * 未知资产key
+     */
+    @Value("${redis.key.event.zz.devicetmp}")
+    private String ZZDEVICETMPKEY ;
+
+    /**
+     * 主站组织架构key
+     */
+    @Value("${redis.key.event.zz.corporation}")
+    private String ZZCORPORATIONKEY ;
+
+    /**
+     * 告警topic
+     */
+    @Value("${kafka.producer.alarms.topic}")
+    private String ALARMSTOPIC ;
+
+    @Value("${jedis.zk.connect.host}")
+    private String zkConnectHost;
+    @Value("${jedis.zk.session.timeout}")
+    private int zkSessionTimeout;
+    @Value("${jedis.zk.proxy.dir}")
+    private String zkProxyDir;
+    @Value("${jedis.session.auth}")
+    private String sessionAuth;
+    @Value("${jedis.connection.timeout}")
+    private int jedis_connection_timeout_ms;
+    @Value("${jedis.sotimeout}")
+    private int jedis_sotimeout_ms;
+
+    @Value("${jedis.maxTotal}")
+    private int maxTotal;
+    @Value("${jedis.maxIdle}")
+    private int maxIdle;
+    @Value("${jedis.minIdle}")
+    private int minIdle;
+    @Value("${jedis.maxWaitMillis}")
+    private int maxWaitMillis;
+    @Value("${jedis.softMinEvictableIdleTimeMillis}")
+    private int softMinEvictableIdleTimeMillis;
+
+    /**
      * 根据告警规则名称获取告警统计规则
      *
      * @param alarmName 告警规则名称
@@ -88,8 +141,6 @@ public class MetadataService {
 //            @Override
 //            public void run() {
         try {
-            //初始化参数
-            EventTypeAndTag.init();
 
             Map aggregationsMap = (Map) jsonObj.get("aggregations");
             Map deviceGUIDCountMap = (Map) aggregationsMap.get("deviceGUIDCount");
@@ -121,18 +172,21 @@ public class MetadataService {
 
                             try {
                                 //添加资产信息
-                                JedisClient jedisClient = new JedisClient();
-                                String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                JedisConfig jedisConfig = new JedisConfig(REDISDBINDEX,zkConnectHost,zkSessionTimeout,zkProxyDir,sessionAuth,
+                                        jedis_connection_timeout_ms,jedis_sotimeout_ms,
+                                        maxTotal,maxIdle,minIdle,maxWaitMillis,softMinEvictableIdleTimeMillis);
+                                JedisClient jedisClient = new JedisClient(jedisConfig);
+                                String deviceBean = jedisClient.hget(REDISDBINDEX, ZZDEVICEKEY, deviceGUID);
                                 if (deviceBean == null) {
                                     //添加未知资产信息
-                                    String dbDeviceTmpBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICETMPKEY, deviceGUID);
+                                    String dbDeviceTmpBean = jedisClient.hget(REDISDBINDEX, ZZDEVICETMPKEY, deviceGUID);
                                     DeviceUtils.deviceTmpAddToMap(map, dbDeviceTmpBean);
                                 } else {
                                     //添加已知资产信息
                                     DeviceUtils.deviceStrAddToMap(map, deviceBean);
                                 }
                                 //添加组织机构信息
-                                String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                String corporationBean = jedisClient.hget(REDISDBINDEX, ZZCORPORATIONKEY, corpId);
                                 DeviceUtils.corpAddToMap(map, corporationBean);
                             } catch (Exception e) {
                                 logger.error("从redis中获取数据异常：" + e.getMessage());
@@ -156,7 +210,7 @@ public class MetadataService {
                             //转发至告警
                             String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"1\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
                             BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
-                            producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                            producer.send(ALARMSTOPIC, alarm);
                             producer.flush();
                         }
                     }
@@ -179,8 +233,6 @@ public class MetadataService {
 //            @Override
 //            public void run() {
         try {
-            //初始化参数
-            EventTypeAndTag.init();
             Map aggregationsMap = (Map) jsonObj.get("aggregations");
             Map deviceGUIDMap = (Map) aggregationsMap.get("deviceGUIDCount");
             List<Map> buckets = (List) deviceGUIDMap.get("buckets");
@@ -212,18 +264,21 @@ public class MetadataService {
                             map.put("corpId", corpId);
                             try {
                                 //添加资产信息
-                                JedisClient jedisClient = new JedisClient();
-                                String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                JedisConfig jedisConfig = new JedisConfig(REDISDBINDEX,zkConnectHost,zkSessionTimeout,zkProxyDir,sessionAuth,
+                                        jedis_connection_timeout_ms,jedis_sotimeout_ms,
+                                        maxTotal,maxIdle,minIdle,maxWaitMillis,softMinEvictableIdleTimeMillis);
+                                JedisClient jedisClient = new JedisClient(jedisConfig);
+                                String deviceBean = jedisClient.hget(REDISDBINDEX, ZZDEVICEKEY, deviceGUID);
                                 if (deviceBean == null) {
                                     //添加未知资产信息
-                                    String dbDeviceTmpBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICETMPKEY, deviceGUID);
+                                    String dbDeviceTmpBean = jedisClient.hget(REDISDBINDEX, ZZDEVICETMPKEY, deviceGUID);
                                     DeviceUtils.deviceTmpAddToMap(map, dbDeviceTmpBean);
                                 } else {
                                     //添加已知资产信息
                                     DeviceUtils.deviceStrAddToMap(map, deviceBean);
                                 }
                                 //添加组织机构信息
-                                String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                String corporationBean = jedisClient.hget(REDISDBINDEX, ZZCORPORATIONKEY, corpId);
                                 DeviceUtils.corpAddToMap(map, corporationBean);
                             } catch (Exception e) {
                                 logger.error("从redis中获取数据异常：" + e.getMessage());
@@ -246,7 +301,7 @@ public class MetadataService {
                             //转发至告警
                             String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"2\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
                             BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
-                            producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                            producer.send(ALARMSTOPIC, alarm);
                             producer.flush();
                         }
                     }
@@ -268,8 +323,6 @@ public class MetadataService {
 //            @Override
 //            public void run() {
         try {
-            //初始化参数
-            EventTypeAndTag.init();
             Map aggregationsMap = (Map) jsonObj.get("aggregations");
             Map deviceGUIDCountMap = (Map) aggregationsMap.get("deviceGUIDCount");
             List<Map> buckets = (List) deviceGUIDCountMap.get("buckets");
@@ -306,18 +359,21 @@ public class MetadataService {
 
                                         try {
                                             //添加资产信息
-                                            JedisClient jedisClient = new JedisClient();
-                                            String deviceBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICEKEY, deviceGUID);
+                                            JedisConfig jedisConfig = new JedisConfig(REDISDBINDEX,zkConnectHost,zkSessionTimeout,zkProxyDir,sessionAuth,
+                                                    jedis_connection_timeout_ms,jedis_sotimeout_ms,
+                                                    maxTotal,maxIdle,minIdle,maxWaitMillis,softMinEvictableIdleTimeMillis);
+                                            JedisClient jedisClient = new JedisClient(jedisConfig);
+                                            String deviceBean = jedisClient.hget(REDISDBINDEX, ZZDEVICEKEY, deviceGUID);
                                             if (deviceBean == null) {
                                                 //添加未知资产信息
-                                                String dbDeviceTmpBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZDEVICETMPKEY, deviceGUID);
+                                                String dbDeviceTmpBean = jedisClient.hget(REDISDBINDEX,ZZDEVICETMPKEY, deviceGUID);
                                                 DeviceUtils.deviceTmpAddToMap(map, dbDeviceTmpBean);
                                             } else {
                                                 //添加已知资产信息
                                                 DeviceUtils.deviceStrAddToMap(map, deviceBean);
                                             }
                                             //添加组织机构信息
-                                            String corporationBean = jedisClient.hget(EventTypeAndTag.REDISDBINDEX, EventTypeAndTag.ZZCORPORATIONKEY, corpId);
+                                            String corporationBean = jedisClient.hget(REDISDBINDEX, ZZCORPORATIONKEY, corpId);
                                             DeviceUtils.corpAddToMap(map, corporationBean);
                                         } catch (Exception e) {
                                             logger.error("从redis中获取数据异常：" + e.getMessage());
@@ -339,7 +395,7 @@ public class MetadataService {
                                         //转发到告警
                                         String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"3\", \"ClientIp\":\"" + srcIp + "\",\"ServerIp\":\"" + destIp + "\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
                                         BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
-                                        producer.send(EventTypeAndTag.ALARMSTOPIC, alarm);
+                                        producer.send(ALARMSTOPIC, alarm);
                                         producer.flush();
                                     }
                                 }

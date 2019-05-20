@@ -31,3 +31,33 @@ spring:
     username: root
     password: ack..mLoca20
     url: jdbc:mysql://ii-wabd-001:3306/data_extension?characterEncoding=utf8
+jedis:
+  database: 0
+  zk:
+    connect:
+      host: iii-wabd-003:2181,iii-wabd-004:2181,iii-wabd-005:2181
+    session:
+      timeout: 5000
+    proxy:
+      dir: /jodis/codis-test1
+  session:
+    auth: 123456
+  connection:
+    timeout: 2000
+  sotimeout: 2000
+  maxTotal: 1000
+  maxIdle: 10
+  minIdle: 3
+  maxWaitMillis: 10000
+  softMinEvictableIdleTimeMillis: 5000
+redis:
+  key:
+    event:
+      zz:
+        device: deviceInfoGuidbd
+        devicetmp: deviceTmpInfoLidbd
+        corporation: ui_corporationbd
+kafka:
+  producer:
+    alarms:
+      topic: alarms
