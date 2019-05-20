@@ -56,6 +56,7 @@ public class CommunicationAlarmConfig {
 
         }
         logger.info("-----------srcIpSumTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
+        trigger.setStartDelay(1);
         trigger.setRepeatInterval(ruleValue);
         return trigger;
     }
@@ -87,6 +88,7 @@ public class CommunicationAlarmConfig {
             ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
 
         }
+        trigger.setStartDelay(2);
         trigger.setRepeatInterval(ruleValue);
         logger.info("-----------srcIpAndDestIpCountTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
         return trigger;
@@ -119,6 +121,7 @@ public class CommunicationAlarmConfig {
             ruleValue = Double.valueOf(map.get("rule_value")+"").longValue()*1000L;
 
         }
+        trigger.setStartDelay(3);
         trigger.setRepeatInterval(ruleValue);
         logger.info("-----------srcIpAndDestPortCountTrigger Configuration定时周期------------"+ruleValue+"毫秒-->"+(ruleValue/60/1000)+"分");
         return trigger;

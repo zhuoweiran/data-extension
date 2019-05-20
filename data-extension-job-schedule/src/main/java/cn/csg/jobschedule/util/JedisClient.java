@@ -26,9 +26,9 @@ public class JedisClient implements Serializable{
     private static Jedis jedis = null ;
 
     public JedisClient(){
-        if (jedis == null) {
+//        if (jedis == null) {
             jedis = JedisConnectionPool.getJedis();
-        }
+//        }
     }
 
     /***
