@@ -108,6 +108,19 @@ public class MetadataService {
     @Value("${jedis.softMinEvictableIdleTimeMillis}")
     private int softMinEvictableIdleTimeMillis;
 
+    @Value("${kafka.bigdata.bootstrap.servers}")
+    private String bootstrapServers;
+    @Value("${kafka.producer.client.id}")
+    private String clientId;
+    @Value("${kafka.producer.batch.size}")
+    private String batchSize;
+    @Value("${kafka.producer.linger.ms}")
+    private String lingerMs;
+    @Value("${kafka.producer.buffer.memory}")
+    private String bufferMemory;
+    @Value("${kafka.producer.request.size}")
+    private String requestSize;
+
     /**
      * 根据告警规则名称获取告警统计规则
      *
@@ -209,7 +222,14 @@ public class MetadataService {
                             bulkRequest.add(client.prepareIndex(index, type, id).setSource(map));
                             //转发至告警
                             String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"1\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
-                            BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                            Properties props = new Properties();
+                            props.setProperty("kafka.bigdata.bootstrap.servers",bootstrapServers);
+                            props.setProperty("kafka.producer.client.id",clientId);
+                            props.setProperty("kafka.producer.batch.size",batchSize);
+                            props.setProperty("kafka.producer.linger.ms",lingerMs);
+                            props.setProperty("kafka.producer.buffer.memory",bufferMemory);
+                            props.setProperty("kafka.producer.request.size",requestSize);
+                            BigdataProducerUtil producer = BigdataProducerUtil.getInstance(props);
                             producer.send(ALARMSTOPIC, alarm);
                             producer.flush();
                         }
@@ -300,7 +320,14 @@ public class MetadataService {
 
                             //转发至告警
                             String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"2\", \"ClientIp\":\"\",\"ServerIp\":\"\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
-                            BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                            Properties props = new Properties();
+                            props.setProperty("kafka.bigdata.bootstrap.servers",bootstrapServers);
+                            props.setProperty("kafka.producer.client.id",clientId);
+                            props.setProperty("kafka.producer.batch.size",batchSize);
+                            props.setProperty("kafka.producer.linger.ms",lingerMs);
+                            props.setProperty("kafka.producer.buffer.memory",bufferMemory);
+                            props.setProperty("kafka.producer.request.size",requestSize);
+                            BigdataProducerUtil producer = BigdataProducerUtil.getInstance(props);
                             producer.send(ALARMSTOPIC, alarm);
                             producer.flush();
                         }
@@ -394,7 +421,14 @@ public class MetadataService {
                                         bulkRequest.add(client.prepareIndex(index, type, id).setSource(map));
                                         //转发到告警
                                         String alarm = "{\"Header\":{\"DcdGuid\":\"" + deviceGUID + "\",\"DevGuid\":\"" + deviceGUID + "\",\"Sid\":\"" + id + "\",\"Timestamp\":\"" + Long.valueOf(map.get("timestamp") + "") + "\"},\"Data\":{\"AppName\":\"\",\"EventType \":\"01\",\"FunClassTag\":\"Comm-expl\",\"DiscoverTime\":\"" + map.get("processTime") + "\",\"Details\":{\"ExplType\":\"3\", \"ClientIp\":\"" + srcIp + "\",\"ServerIp\":\"" + destIp + "\",\"Threshold\":\"" + thresholdValue + "\",\"Cycle\":\"" + cycle + "\",\"Partition\":\"" + map.get("securityPartition") + "\"}}}";
-                                        BigdataProducerUtil producer = BigdataProducerUtil.getInstance(ResourceUtil.load("EventCommonJob.properties"));
+                                        Properties props = new Properties();
+                                        props.setProperty("kafka.bigdata.bootstrap.servers",bootstrapServers);
+                                        props.setProperty("kafka.producer.client.id",clientId);
+                                        props.setProperty("kafka.producer.batch.size",batchSize);
+                                        props.setProperty("kafka.producer.linger.ms",lingerMs);
+                                        props.setProperty("kafka.producer.buffer.memory",bufferMemory);
+                                        props.setProperty("kafka.producer.request.size",requestSize);
+                                        BigdataProducerUtil producer = BigdataProducerUtil.getInstance(props);
                                         producer.send(ALARMSTOPIC, alarm);
                                         producer.flush();
                                     }

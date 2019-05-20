@@ -61,3 +61,16 @@ kafka:
   producer:
     alarms:
       topic: alarms2
+    client:
+      id: client_id
+    batch:
+      size: 10240
+    linger:
+      ms: 100
+    buffer:
+      memory: 33554432
+    request:
+      size: 10485760
+  bigdata:
+    bootstrap:
+      servers: zdbd01:9092,zdbd02:9092,zdbd03:9092
