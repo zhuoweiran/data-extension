@@ -165,7 +165,8 @@ public class MetadataService {
                         Integer.parseInt(esClusterPort), esClusterName);
                 TransportClient client = esConnectionPool.getClient();
                 BulkRequestBuilder bulkRequest = client.prepareBulk();
-                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+//                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), DatetimeConstants.YYYY_MM_DD_HH_MM_SS);
                 String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                 for (Map deviceGUIDGroupMap : buckets) {
@@ -263,7 +264,8 @@ public class MetadataService {
                         Integer.parseInt(esClusterPort), esClusterName);
                 TransportClient client = esConnectionPool.getClient();
                 BulkRequestBuilder bulkRequest = client.prepareBulk();
-                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+//                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), DatetimeConstants.YYYY_MM_DD_HH_MM_SS);
                 String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                 for (Map deviceGUIDGroupMap : buckets) {
@@ -360,7 +362,8 @@ public class MetadataService {
                         Integer.parseInt(esClusterPort), esClusterName);
                 TransportClient client = esConnectionPool.getClient();
                 BulkRequestBuilder bulkRequest = client.prepareBulk();
-                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+//                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), DatetimeConstants.YYYY_MM_DD);
+                Date createTime = DatetimeUtil.toDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), DatetimeConstants.YYYY_MM_DD_HH_MM_SS);
                 String createDateStr = DatetimeUtil.toStr(createTime, DatetimeConstants.YYYY_MM_DD_T_HH_MM_SS_XXX);
 
                 for (Map deviceGUIDGroupMap : buckets) {

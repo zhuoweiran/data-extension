@@ -14,7 +14,7 @@ escluster:
   commpair_alarm:
     index: commpair_alarm
   security_policy:
-    index: communicationalarm
+    index: security_policy-
 spring:
   data:
     elasticsearch:
@@ -39,9 +39,11 @@ jedis:
     session:
       timeout: 5000
     proxy:
-      dir: /jodis/codis-test1
+#      dir: /jodis/codis-test1
+      dir: /jodis/codis-cluster
   session:
-    auth: 123456
+#    auth: 123456
+    auth: Wa..321$%^
   connection:
     timeout: 2000
   sotimeout: 2000
