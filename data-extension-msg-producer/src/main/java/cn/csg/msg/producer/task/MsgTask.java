@@ -58,6 +58,8 @@ public class MsgTask extends QuartzJobBean {
             e.printStackTrace();
         } catch (TemplateException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if(msg != null) {
