@@ -7,13 +7,15 @@
     <groupId>cn.csg</groupId>
     <artifactId>data-extension</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
     <modules>
         <module>data-extension-api</module>
         <module>data-extension-core</module>
         <module>data-extension-common</module>
         <module>data-extension-util</module>
         <module>data-extension-job-schedule</module>
+        <module>data-extension-es-client</module>
+        <module>data-extension-msg-producer</module>
     </modules>
     <properties>
         <fastjson.version>1.2.10</fastjson.version>

@@ -5,6 +5,7 @@ import cn.csg.common.vo.ExplodeVo;
 import cn.csg.common.vo.RuleVo;
 import cn.csg.jobschedule.dao.ExplodeDao;
 import cn.csg.jobschedule.dao.RuleDao;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +23,34 @@ public class ExplodeService {
     @Autowired
     private RuleDao ruleDao;
 
+    @Autowired
+    private ExplodeJobService jobService;
+
 
 
     public List<ExplodeVo> findAll(){
         return explodeDao.findAll();
     }
 
-    public ExplodeVo save(ExplodeVo explodeVo){
+    public ExplodeVo save(ExplodeVo explodeVo)  {
         List<RuleVo> ruleVos = explodeVo.getRuleVos();
         logger.debug("保存ExplodeVo:{}",explodeVo);
 
         for(RuleVo ruleVo : ruleVos){
             ruleVo.setId(ruleDao.findFirstByKeyAndRule(ruleVo.getKey(),explodeVo.getId()));
-            //修改trigger
-
-            /*if(ruleVo.getKey().equals(RuleKeyEnum.WINDOWN.getKey())) {
-                try {
-                    jobTriggerService.scheduleUpdateTrigger(
-                            ExplodeType.initExplodeType(explodeVo.getName()),
-                            ruleVo.getValue().longValue()
-                    );
-                } catch (SchedulerException e) {
-                    e.printStackTrace();
-                    logger.error("修改trigger {} 失败",explodeVo.getName());
-                }
-            }*/
         }
+
         ruleDao.saveAll(ruleVos);
+        try {
+            jobService.updateJob(explodeVo);
+        } catch (SchedulerException e) {
+            logger.error("更新调度失败[{}],[job_{}]", explodeVo.getName(), explodeVo.getId());
+            e.printStackTrace();
+        }
         return explodeVo;
+    }
+
+    public ExplodeVo findById(String id){
+        return explodeDao.getOne(id);
     }
 }

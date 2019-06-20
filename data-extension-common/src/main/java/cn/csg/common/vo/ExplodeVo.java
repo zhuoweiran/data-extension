@@ -2,15 +2,21 @@ package cn.csg.common.vo;
 
 
 import cn.csg.common.enums.ExplodeType;
+import cn.csg.common.enums.RuleKeyEnum;
 import jdk.nashorn.internal.objects.annotations.Property;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity(name = "Explode")
 @Table(name = "tb_explode")
+@Proxy(lazy = false)
 public class ExplodeVo{
     @Id
     @GeneratedValue(generator = "uuid")
@@ -20,7 +26,7 @@ public class ExplodeVo{
     private String name;
 
     @Property(name = "ruleVos")
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "Rule", referencedColumnName = "id")
     private List<RuleVo> ruleVos;
 
@@ -52,6 +58,9 @@ public class ExplodeVo{
         }
         return name;
     }
+    public ExplodeType getExplodeType(){
+        return ExplodeType.initExplodeType(this.name);
+    }
 
     public void setName(String name) {
         if(StringUtils.isNotEmpty(name)){
@@ -65,6 +74,20 @@ public class ExplodeVo{
                 this.name = ExplodeType.SRC_IP_AND_DEST_PORT_COUNT.getExplode();
             }
         }
+    }
+
+    public BigDecimal getValByName(String name){
+        BigDecimal val = null;
+        if(name == null)
+            return val;
+        if(! name.equals(RuleKeyEnum.WINDOWN.getKey()) && ! name.equals(RuleKeyEnum.TARGET.getKey()))
+            return val;
+        for(RuleVo rule : ruleVos){
+            if(rule.getKey().equals(name)) {
+                val = rule.getValue();
+            }
+        }
+        return val;
     }
 
     public List<RuleVo> getRuleVos() {

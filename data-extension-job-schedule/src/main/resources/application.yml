@@ -1,6 +1,10 @@
 spring:
   profiles:
-    active: test
-#logging:
-#  level:
-#    root: info
+    active: dev
+schedule:
+  group:
+    name: default
+logging:
+  level:
+    root: info
+  file: /log/log/info.log

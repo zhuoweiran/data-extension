@@ -1,6 +1,5 @@
 package cn.csg.jobschedule.util;
 
-import cn.csg.jobschedule.constants.SymbolsConstants;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -28,7 +27,7 @@ public class EsConnectionPool implements Serializable {
      */
     public EsConnectionPool(String nodes, int port, String clusterName) {
         if (client == null) {
-            String[] nds = nodes.split(SymbolsConstants.Comma);
+            String[] nds = nodes.split(",");
             try {
                 client = new PreBuiltTransportClient(initSettings(clusterName));
                 for (String nd : nds) {
