@@ -1,0 +1,29 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /msg-producer
+kafka:
+  producer:
+    client:
+      id: client_id
+    batch:
+      size: 10240
+    linger:
+      ms: 100
+    buffer:
+      memory: 33554432
+    request:
+      size: 10485760
+  bigdata:
+    bootstrap:
+      servers: zdbd01:9092,zdbd02:9092,zdbd03:9092
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://zdbd02:3306/data_extension?characterEncoding=utf8&useSSL=true
