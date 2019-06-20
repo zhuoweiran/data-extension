@@ -5,7 +5,7 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://zdbd03:9200/commpair_alarm
+  url: http://zdbd03:9200
 escluster:
   cluster: es_nfdw
   nodes: zdbd01,zdbd02,zdbd03

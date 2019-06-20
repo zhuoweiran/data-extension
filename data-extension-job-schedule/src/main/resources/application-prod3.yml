@@ -5,7 +5,7 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://iii-wabd-004:9200/commpair_alarm
+  url: http://iii-wabd-004:9200
 escluster:
   cluster: es_nfdw
   nodes: iii-wabd-003,iii-wabd-004,iii-wabd-005,iii-wabd-006
@@ -57,6 +57,7 @@ redis:
         device: deviceInfoGuidbd
         devicetmp: deviceTmpInfoLidbd
         corporation: ui_corporationbd
+        dcdDeviceIpbd: dcdDeviceIpbd
 kafka:
   producer:
     alarms:

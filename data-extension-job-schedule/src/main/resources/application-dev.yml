@@ -5,7 +5,7 @@ server:
     context-path: /job-schedule
 feign:
   name: escluster
-  url: http://zdbd03:9200/commpair_alarm
+  url: http://zdbd03:9200
 escluster:
   cluster: es_nfdw
   nodes: zdbd01,zdbd02,zdbd03
@@ -13,8 +13,9 @@ escluster:
   type: default
   commpair_alarm:
     index: commpair_alarm
+## 统一放入可以通讯，不再放入爆发式通讯对单独的索引
   security_policy:
-    index: communicationalarm
+    index: security_test
 spring:
   data:
     elasticsearch:
@@ -57,10 +58,11 @@ redis:
         device: deviceInfoGuidbd
         devicetmp: deviceTmpInfoLidbd
         corporation: ui_corporationbd
+        dcdDeviceIpbd: dcdDeviceIpbd
 kafka:
   producer:
     alarms:
-      topic: alarms2
+      topic: network
     client:
       id: client_id
     batch:

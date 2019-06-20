@@ -23,7 +23,4 @@ public class CommonUtil {
         return o.toString();
     }
 
-    public static void main(String[] args) {
-        System.out.println(checkAddress("255.255.255.255"));;
-    }
 }

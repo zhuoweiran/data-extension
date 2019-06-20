@@ -6,7 +6,7 @@ package cn.csg.jobschedule.constants;
  * @Date: Created in 16:50 2019/4/22
  * @Modified By:
  */
-public interface EventConstants extends Constants {
+public interface EventConstants {
 
     /**
      * Event事件的报文开始
