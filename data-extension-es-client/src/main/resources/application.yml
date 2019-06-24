@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: dev
+  thymeleaf:
+    enabled: true
 server:
   port: 8089
 #logging:
