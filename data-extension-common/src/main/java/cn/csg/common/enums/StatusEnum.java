@@ -3,7 +3,8 @@ package cn.csg.common.enums;
 public enum StatusEnum {
     SUCCESS(0,"获取成功"),
     ERROR(-1,"获取失败"),
-    UPDATE(0,"更新成功");
+    UPDATE(0,"更新成功"),
+    DELETE(0,"删除成功");
     private Integer status;
     private String msg;
 

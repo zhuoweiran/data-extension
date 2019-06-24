@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/data-extension.iml" filepath="$PROJECT_DIR$/data-extension.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-api/data-extension-api.iml" filepath="$PROJECT_DIR$/data-extension-api/data-extension-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-common/data-extension-common.iml" filepath="$PROJECT_DIR$/data-extension-common/data-extension-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-core/data-extension-core.iml" filepath="$PROJECT_DIR$/data-extension-core/data-extension-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-es-client/data-extension-es-client.iml" filepath="$PROJECT_DIR$/data-extension-es-client/data-extension-es-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-job-schedule/data-extension-job-schedule.iml" filepath="$PROJECT_DIR$/data-extension-job-schedule/data-extension-job-schedule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-msg-producer/data-extension-msg-producer.iml" filepath="$PROJECT_DIR$/data-extension-msg-producer/data-extension-msg-producer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-extension-util/data-extension-util.iml" filepath="$PROJECT_DIR$/data-extension-util/data-extension-util.iml" />
+    </modules>
+  </component>
+</project>

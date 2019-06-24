@@ -26,7 +26,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://zdbd02:3306/data_extension?characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://zdbd02:3306/msg-producer?characterEncoding=utf8&useSSL=true
 jedis:
   database: 0
   zk:
