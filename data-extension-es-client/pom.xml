@@ -29,34 +29,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.vresion}</version>
         </dependency>
-
         <dependency>
-            <groupId>io.codis.jodis</groupId>
-            <artifactId>jodis</artifactId>
-            <version>0.5.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+            <version>${spring.boot.vresion}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>23.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.49</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>cn.csg</groupId>
-            <artifactId>data-extension-common</artifactId>
-            <version>${de.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

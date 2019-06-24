@@ -21,6 +21,7 @@ public class MsgRules {
     private String key;
     @Column(name = "rule_value")
     private String value;
+    @Enumerated(EnumType.STRING)
     private ValueType valueType;
     private boolean status;
 

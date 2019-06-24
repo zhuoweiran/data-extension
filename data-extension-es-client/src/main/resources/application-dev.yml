@@ -1,24 +1,4 @@
-feign:
-  name: escluster
-  url: http://zdbd03:9200/commpair_alarm
-  alarm_url: http://zdbd03:9200
-jedis:
-  database: 0
-  zk:
-    connect:
-      hosts: zdbd01:2181,zdbd02:2181,zdbd03:2181
-    session:
-      timeout: 5000
-    proxy:
-      dir: /jodis/codis-test1
-  session:
-    auth: 123456
-  connection:
-    timeout: 2000
-  sotimeout: 2000
-  maxTotal: 1
-  maxIdle: 1
-  minIdle: 1
-  maxWaitMillis: 10000
-  softMinEvictableIdleTimeMillis: 5000
-
+spring:
+  mvc:
+    view:
+      suffix: .html

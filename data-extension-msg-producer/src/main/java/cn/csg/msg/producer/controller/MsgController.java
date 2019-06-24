@@ -10,9 +10,11 @@ import cn.csg.msg.producer.service.JobService;
 import cn.csg.msg.producer.service.MsgJobService;
 import cn.csg.msg.producer.service.MsgRulesService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 
 
 @RestController
@@ -44,15 +46,22 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
-    @ApiOperation(value ="新增任务",httpMethod = "GET")
-    @GetMapping(value= "/save")
+    @ApiOperation(value ="新增任务",httpMethod = "POST")
+    @PostMapping(value= "/save")
     public ResultData save(MsgJob msgJob){
+        System.out.println(msgJob);
         if(msgJob.isStatus()){
             try {
                 jobService.addJob(msgJob);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if(msgJob.getLastSuccessTime() == null){
+            msgJob.setLastSuccessTime(new Date());
+        }
+        if(StringUtils.isEmpty(msgJob.getId())){
+            msgJob.setId(null);
         }
         return new ResultData<>(
                 msgJobService.save(msgJob),
@@ -145,11 +154,12 @@ public class MsgController {
     @GetMapping(value= "/init")
     public ResultData init(){
         MsgJob msgJob = new MsgJob();
-        msgJob.setName("test");
+        msgJob.setName("test2");
         msgJob.setTopic("test");
-        msgJob.setTemplate("${guid}^${now?String('yyyy-MM-dd HH:mm:ss.SSS')}^${default!default_val}^${num*100}");
+        msgJob.setTemplate("${guid}^${now?string('yyyy-MM-dd HH:mm:ss.SSS')}^${num*100}");
         msgJob.setWindow(10);
         msgJob.setStatus(false);
+        msgJob.setLastSuccessTime(new Date());
 
         MsgJob result = msgJobService.save(msgJob);
 
@@ -180,6 +190,14 @@ public class MsgController {
 
         return new ResultData<>(
                 msgJob,
+                ResultStatus.initStatus(StatusEnum.UPDATE)
+        );
+    }
+    @ApiOperation(value ="初始化一个测试任务",httpMethod = "GET")
+    @GetMapping(value= "/findJob/{id}")
+    public ResultData findMsgJobById(@PathVariable(name = "id") String id){
+        return new ResultData<>(
+                msgJobService.findById(id),
                 ResultStatus.initStatus(StatusEnum.UPDATE)
         );
     }
