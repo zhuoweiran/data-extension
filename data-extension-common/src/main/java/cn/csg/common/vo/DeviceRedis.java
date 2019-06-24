@@ -30,4 +30,6 @@ public class DeviceRedis {
     private String user;
     private String version;
     private String zdlx;
+    private String voltagelevel;
+    private String deviceRegisterGuid;
 }

@@ -5,6 +5,7 @@ import cn.csg.common.ResultStatus;
 import cn.csg.common.enums.StatusEnum;
 import cn.csg.msg.producer.bean.MsgJob;
 import cn.csg.msg.producer.bean.MsgRules;
+import cn.csg.msg.producer.bean.MsgType;
 import cn.csg.msg.producer.bean.ValueType;
 import cn.csg.msg.producer.service.JobService;
 import cn.csg.msg.producer.service.MsgJobService;
@@ -133,7 +134,7 @@ public class MsgController {
             e.printStackTrace();
         }
         msgJobService.delete(job);
-        return new ResultData<>(null, ResultStatus.initStatus(StatusEnum.SUCCESS));
+        return new ResultData<>(null, ResultStatus.initStatus(StatusEnum.DELETE));
     }
 
     @ApiOperation(value ="停止任务",httpMethod = "GET")
@@ -159,6 +160,7 @@ public class MsgController {
         msgJob.setTemplate("${guid}^${now?string('yyyy-MM-dd HH:mm:ss.SSS')}^${num*100}");
         msgJob.setWindow(10);
         msgJob.setStatus(false);
+        msgJob.setMsgType(MsgType.EText);
         msgJob.setLastSuccessTime(new Date());
 
         MsgJob result = msgJobService.save(msgJob);
@@ -193,12 +195,41 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.UPDATE)
         );
     }
-    @ApiOperation(value ="初始化一个测试任务",httpMethod = "GET")
+    @ApiOperation(value ="通过id查询一个任务",httpMethod = "GET")
     @GetMapping(value= "/findJob/{id}")
     public ResultData findMsgJobById(@PathVariable(name = "id") String id){
         return new ResultData<>(
                 msgJobService.findById(id),
-                ResultStatus.initStatus(StatusEnum.UPDATE)
+                ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
+
+    @ApiOperation(value ="通过id查询一个任务规则",httpMethod = "GET")
+    @GetMapping(value= "/findRule/{id}")
+    public ResultData findMsgRulesById(@PathVariable(name = "id") String id){
+        return new ResultData<>(
+                msgRulesService.findById(id),
+                ResultStatus.initStatus(StatusEnum.SUCCESS)
+        );
+    }
+    @ApiOperation(value ="更新一个任务规则",httpMethod = "POST")
+    @PostMapping(value= "/saveRule")
+    public ResultData saveRules(MsgRules rules){
+        rules.setStatus(true);
+        return new ResultData<>(
+                msgRulesService.save(rules),
+                ResultStatus.initStatus(StatusEnum.SUCCESS)
+        );
+    }
+    @ApiOperation(value ="删除一个任务规则",httpMethod = "GET")
+    @GetMapping(value= "/deleteRule/{id}")
+    public ResultData deleteRules(@PathVariable(name = "id") String id){
+        MsgRules rules = msgRulesService.findById(id);
+        msgRulesService.delete(rules);
+        return new ResultData<>(
+                null,
+                ResultStatus.initStatus(StatusEnum.DELETE)
+        );
+    }
+
 }

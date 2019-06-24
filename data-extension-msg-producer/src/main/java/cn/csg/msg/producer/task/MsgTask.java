@@ -1,6 +1,7 @@
 package cn.csg.msg.producer.task;
 
 import cn.csg.msg.producer.bean.MsgJob;
+import cn.csg.msg.producer.bean.MsgType;
 import cn.csg.msg.producer.service.MsgJobService;
 import cn.csg.msg.producer.service.MsgRulesService;
 import freemarker.cache.StringTemplateLoader;
@@ -63,6 +64,11 @@ public class MsgTask extends QuartzJobBean {
         }
 
         if(msg != null) {
+            MsgType msgType = job.getMsgType();
+            if(msgType == MsgType.Json){
+                //添加header 和 end
+                msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+            }
             producer.send(new ProducerRecord<>(job.getTopic(), msg));
         }else {
             logger.error("添加任务[{}]失败", job.getName());

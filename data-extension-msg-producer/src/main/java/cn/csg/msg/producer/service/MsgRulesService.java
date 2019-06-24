@@ -1,16 +1,21 @@
 package cn.csg.msg.producer.service;
 
+import cn.csg.common.vo.DeviceRedis;
+import cn.csg.common.vo.DeviceTmpRedis;
 import cn.csg.msg.producer.bean.MsgRules;
 import cn.csg.msg.producer.bean.ValueType;
 import cn.csg.msg.producer.dao.MsgRulesDao;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Maps;
+import io.codis.jodis.JedisResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +27,9 @@ public class MsgRulesService {
     private final Logger logger = LoggerFactory.getLogger(MsgRulesService.class);
     @Autowired
     private MsgRulesDao msgRulesDao;
+
+    @Autowired
+    private JedisResourcePool jedisResourcePool;
 
     public MsgRules save(MsgRules msgRules){
         return msgRulesDao.save(msgRules);
@@ -54,7 +62,20 @@ public class MsgRulesService {
                     logger.error("值[{}]配置有误" ,value);
                     throw new Exception(e);
                 }
-            }else if(valueType == ValueType.Table){
+            }else if(valueType == ValueType.Table_Device){
+                Jedis jedis = jedisResourcePool.getResource();
+                String sandDeviceGuid = jedis.srandmember("deviceGuidSet");
+                String deviceJson = jedis.hget("deviceInfoGuidbd", sandDeviceGuid);
+                DeviceRedis deviceRedis = JSONObject.parseObject(deviceJson, new TypeReference<DeviceRedis>(){});
+                result.put(key, deviceRedis);
+                jedis.close();
+            }else if(valueType == ValueType.Table_TmpDevice){
+                Jedis jedis = jedisResourcePool.getResource();
+                String sandDeviceGuid = jedis.srandmember("tmpDeviceGuidSet");
+                String deviceJson = jedis.hget("deviceTmpInfoLidbd", sandDeviceGuid);
+                DeviceTmpRedis deviceTmpRedis = JSONObject.parseObject(deviceJson, new TypeReference<DeviceTmpRedis>(){});
+                result.put(key, deviceTmpRedis);
+                jedis.close();
 
             }else {
                 result.put(key, value);
@@ -62,4 +83,18 @@ public class MsgRulesService {
         }
         return result;
     }
+    public List<MsgRules> list(){
+        return msgRulesDao.findAll();
+    }
+    public List<MsgRules> findAllByJobId(String jobId){
+        return msgRulesDao.findAllByJobId(jobId);
+    }
+
+    public MsgRules findById(String id){
+        return msgRulesDao.getOne(id);
+    }
+    public void delete(MsgRules rules){
+        msgRulesDao.delete(rules);
+    }
+
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="data-extension-api" />
+        <module name="data-extension-common" />
+        <module name="data-extension-core" />
+        <module name="data-extension-es-client" />
+        <module name="data-extension-job-schedule" />
+        <module name="data-extension-msg-producer" />
+        <module name="data-extension-util" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="data-extension" target="1.8" />
+      <module name="data-extension-api" target="1.8" />
+      <module name="data-extension-common" target="1.8" />
+      <module name="data-extension-core" target="1.8" />
+      <module name="data-extension-es-client" target="1.8" />
+      <module name="data-extension-job-schedule" target="1.8" />
+      <module name="data-extension-msg-producer" target="1.8" />
+      <module name="data-extension-util" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="data-extension-api" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-common" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-core" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-es-client" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-job-schedule" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-msg-producer" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-util" options="-XprintProcessorInfo -XprintRounds" />
+    </option>
+  </component>
+</project>

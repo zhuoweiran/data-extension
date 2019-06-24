@@ -23,4 +23,6 @@ public class MsgJob {
     private boolean status;
     private String topic;
     private int window;
+    @Enumerated(EnumType.STRING)
+    private MsgType msgType;
 }
