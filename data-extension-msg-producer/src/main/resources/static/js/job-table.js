@@ -35,9 +35,9 @@ $(document).ready(function(){
             console.log("暂停" + id);
             $.get("/msg-producer/msg/stop/" + id,function (data) {
                 if(data.status.status == 0){
-                    showWarn(id,name + ":暂停成功");
+                    showWarn(id,"SUCCESS",name + ":暂停成功" ,"alert-success");
                 }else{
-                    showWarn(id,name + ":暂停失败");
+                    showWarn(id,"FAILD",name + ":暂停失败" , "alert-danger");
                 }
             });
 
@@ -45,9 +45,9 @@ $(document).ready(function(){
             console.log("启动" + id);
             $.get("/msg-producer/msg/satrt/" + id,function (data) {
                 if(data.status.status == 0){
-                    showWarn(id,name + ":启动成功");
+                    showWarn(id,"SUCCESS",name + ":启动成功","alert-success");
                 }else{
-                    showWarn(id,name + ":启动失败");
+                    showWarn(id,"FAILD",name + ":启动失败","alert-danger");
                 }
             });
 
@@ -64,11 +64,11 @@ $(document).ready(function(){
             console.log("编辑:" + id);
         }else if(btnName == "delete"){
             console.log("删除" + id);
-            $.get("/msg-producer/msg/satrt/" + id,function (data) {
+            $.get("/msg-producer/msg/delete/" + id,function (data) {
                 if(data.status.status == 0){
-                    showWarn(id,name + ":启动成功");
+                    showWarn(id,"SUCCESS",name + ":删除成功","alert-success");
                 }else{
-                    showWarn(id,name + ":启动失败");
+                    showWarn(id,"FAILD",name + ":删除失败","alert-danger");
                 }
             });
         }else if(btnName == "rule"){
@@ -86,7 +86,7 @@ $(document).ready(function(){
             if(data.status.status == 0) {
                 window.location.reload();
             }else{
-                showWarn(id,id + ":保存失败");
+                showWarn(id,"FAILD",name + ":保存失败","alert-danger");
             }
         });
         closeEditModal();
@@ -97,6 +97,7 @@ $(document).ready(function(){
     $(".close").click(function () {
         console.log("close warning");
         $(this).parent("div.alert").addClass("hide");
+        window.location.reload();
     });
 
     $("#add").click(function () {//新增
@@ -104,10 +105,25 @@ $(document).ready(function(){
         $('#myModal').show();
     });
 
-
-    function showWarn(id,data) {
+    $("button[name='test']").click(function () {//验证模版
+        var id = $(this).siblings("div[name='hidden-id']").html();
+        var name = $(this).siblings("div[name='hidden-name']").html();
+        $.get("/msg-producer/msg/testTemplate/"+id,function(data){
+            console.log(data);
+            if(data.status.status == 0) {
+                showWarn(id,"SUCCESS",name + ":测试成功" + data.data ,"alert-success");
+            }else{
+                showWarn(id,"FAILD",name + ":测试失败" + data.data,"alert-danger");
+            }
+        })
+    })
+    function showWarn(id,title,data,styles) {
         console.log($("warn-" + id));
         $("#warn-" + id + ">p").text(data);
+        $("#warn-" + id + ">strong").text(title);
+        $("#warn-" + id).removeClass("alert-success");
+        $("#warn-" + id).removeClass("alert-danger");
+        $("#warn-" + id).addClass(styles);
         $("#warn-" + id).removeClass("hide");
     }
     function closeEditModal(){
