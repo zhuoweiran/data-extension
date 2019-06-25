@@ -12,10 +12,6 @@ public class JsonParser {
         try{
             jsonObject = JSON.parseObject(jsonStr);
         }catch (Exception e){
-            jsonObject = new JSONObject(new HashMap<String, Object>() {{
-                put("msg",jsonStr);
-            }});
-            //throw new JsonParseException(e.getMessage(),e.getCause());
         }
         return jsonObject;
     }
