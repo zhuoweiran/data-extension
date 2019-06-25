@@ -58,8 +58,12 @@
                 </tr>
                 </thead>
                 <tbody>
+                <div class="alert alert-dismissible hide" id="warn-save" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Warning!</strong> <p></p>
+                </div>
                 <#list rules as rule>
-                    <div class="alert alert-warning alert-dismissible hide" id="warn-${rule.id}" role="alert">
+                    <div class="alert alert-dismissible hide" id="warn-${rule.id}" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <strong>Warning!</strong> <p></p>
                     </div>
@@ -155,94 +159,7 @@
 <script src="/msg-producer/js/bootstrap.js"></script>
 <script src="/msg-producer/js/jquery.min.js"></script>
 <script src="/msg-producer/js/bootstrap-table.min.js"></script>
-<#--<script src="/msg-producer/js/rule-table.js"></script>-->
-<script>
-    $(document).ready(function(){
-
-        $("#edit-list > button").click(function () {
-            var id = $(this).siblings(".hidden[name='hidden-id']").html();
-            var name = $(this).siblings(".hidden[name='hidden-name']").html();
-            var btnName = $(this).attr("name");
-            if(btnName == "edit"){
-
-                console.log($("#myModal button.close").html());
-                $("#myModalLabel").text("编辑");
-                //查询数据
-                $.get("/msg-producer/msg/findRule/"+id ,function (data) {
-                    console.log(data);
-                    fillDate(data.data);
-                });
-                $('#myModal').show();
-                console.log("编辑:" + id);
-            }else if(btnName == "delete"){
-                console.log("删除" + id);
-                $.get("/msg-producer/msg/deleteRule/" + id,function (data) {
-                    if(data.status.status == 0){
-                        window.location.reload();
-                    }else{
-                        showWarn(id,name + ":删除失败");
-                    }
-                });
-            }
-        });
-        $(".modal-footer > button[name='save']").click(function () {//保存
-            var name = $(this).attr("name");
-            if(name == "save"){
-                console.log(name);
-            }
-            $.post("/msg-producer/msg/saveRule/",getData(),function (data) {
-                console.info("保存成功" + data);
-                if(data.status.status == 0) {
-                    window.location.reload();
-                }else{
-                    showWarn(id,id + ":保存失败");
-                }
-            });
-            closeEditModal();
-
-        });
-        $("#add").click(function () {//新增
-            var jobId = $(this).siblings(".hidden").html();
-            fillDate({"jobId":jobId});
-            $('#myModal').show();
-        });
-
-        $(".modal-footer > button[name='close']").click(closeEditModal);//关闭
-        function fillDate(data) {
-            $(".modal-body #txt_id").val(data.id);
-            $(".modal-body #txt_jobId").val(data.jobId);
-            $(".modal-body #txt_name").val(data.name);
-            $(".modal-body #txt_key").val(data.key);
-            $(".modal-body #txt_value").val(data.value);
-            $(".modal-body #txt_type").val(data.valueType);
-        }
-        function closeEditModal(){
-            console.log("close Edit Modal");
-            $('#myModal').hide();
-        }
-        function showWarn(id,data) {
-            console.log($("warn-" + id));
-            $("#warn-" + id + ">p").text(data);
-            $("#warn-" + id).removeClass("hide");
-        }
-        function getData() {
-            var id = $(".modal-body #txt_id").val();
-            var jobId = $(".modal-body #txt_jobId").val();
-            var name = $(".modal-body #txt_name").val();
-            var key = $(".modal-body #txt_key").val();
-            var value = $(".modal-body #txt_value").val();
-            var type = $(".modal-body #txt_type").val();
-            return {
-                "id":id,
-                "jobId":jobId,
-                "name":name,
-                "key":key,
-                "value":value,
-                "valueType":type
-            }
-        }
-    })
-</script>
+<script src="/msg-producer/js/rule-table.js"></script>
 </body>
 </html>
 

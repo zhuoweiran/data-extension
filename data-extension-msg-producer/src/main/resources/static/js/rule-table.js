@@ -1,55 +1,10 @@
 $(document).ready(function(){
-    $("#start").click(function(){
-        console.log("start");
-        $("#start").addClass("active");
-        $("#start-table").show();
-        $("#task").removeClass("active");
-        $("#task-table").hide();
-        $("#rule-table").hide();
-        $("#rule").removeClass("active");
-    });
-    $("#task").click(function(){
-        console.log("task");
-        $("#start").removeClass("active");
-        $("#start-table").hide();
-        $("#task").addClass("active");
-        $("#task-table").show();
-        $("#rule-table").hide();
-        $("#rule").removeClass("active");
-    });
-    $("#rule").click(function(){
-        console.log("rule");
-        $("#start").removeClass("active");
-        $("#task").removeClass("active");
-        $("#rule").addClass("active");
-        $("#task-table").hide();
-        $("#rule-table").show();
-    });
 
     $("#edit-list > button").click(function () {
         var id = $(this).siblings(".hidden[name='hidden-id']").html();
         var name = $(this).siblings(".hidden[name='hidden-name']").html();
-        if($(this).html() == "暂停"){
-            console.log("暂停" + id);
-            $.get("/msg-producer/msg/stop/" + id,function (data) {
-                if(data.status.status == 0){
-                    showWarn(id,name + ":暂停成功");
-                }else{
-                    showWarn(id,name + ":暂停失败");
-                }
-            });
-
-        }else if($(this).html() == "启动"){
-            console.log("启动" + id);
-            $.get("/msg-producer/msg/satrt/" + id,function (data) {
-                if(data.status.status == 0){
-                    showWarn(id,name + ":启动成功");
-                }else{
-                    showWarn(id,name + ":启动失败");
-                }
-            });
-
-        }else if($(this).html() == "编辑"){
+        var btnName = $(this).attr("name");
+        if(btnName == "edit"){
 
             console.log($("#myModal button.close").html());
             $("#myModalLabel").text("编辑");
@@ -60,75 +15,80 @@ $(document).ready(function(){
             });
             $('#myModal').show();
             console.log("编辑:" + id);
-        }else if($(this).html() == "删除"){
+        }else if(btnName == "delete"){
             console.log("删除" + id);
-            $.get("/msg-producer/msg/satrt/" + id,function (data) {
+            $.get("/msg-producer/msg/deleteRule/" + id,function (data) {
                 if(data.status.status == 0){
-                    showWarn(id,name + ":启动成功");
+                    showWarn(id,"SUCCESS",name + ":删除成功","alert-success");
                 }else{
-                    showWarn(id,name + ":启动失败");
+                    showWarn(id,"FAILD",name + ":删除失败","alert-danger");
                 }
             });
         }
     });
-
     $(".modal-footer > button[name='save']").click(function () {//保存
         var name = $(this).attr("name");
         if(name == "save"){
             console.log(name);
         }
-        $.post("/msg-producer/msg/save/",getData(),function (data) {
+        $.post("/msg-producer/msg/saveRule/",getData(),function (data) {
             console.info("保存成功" + data);
             if(data.status.status == 0) {
-                window.location.reload();
+                showWarn("save","SUCCESS","保存成功","alert-success");
             }else{
-                showWarn(id,id + ":保存失败");
+                showWarn("save","FAILD",":保存失败","alert-danger");
             }
         });
         closeEditModal();
 
     });
-    $(".modal-footer > button[name='close']").click(closeEditModal);//关闭
-
-    $(".close").click(function () {
-        console.log("close warning");
-        $(this).parent("div.alert").addClass("hide");
-    });
-
     $("#add").click(function () {//新增
-        fillDate({});
+        var jobId = $(this).siblings(".hidden").html();
+        fillDate({"jobId":jobId});
         $('#myModal').show();
     });
 
-
-    function showWarn(id,data) {
-        console.log($("warn-" + id));
-        $("#warn-" + id + ">p").text(data);
-        $("#warn-" + id).removeClass("hide");
+    $(".modal-footer > button[name='close']").click(closeEditModal);//关闭
+    function fillDate(data) {
+        $(".modal-body #txt_id").val(data.id);
+        $(".modal-body #txt_jobId").val(data.jobId);
+        $(".modal-body #txt_name").val(data.name);
+        $(".modal-body #txt_key").val(data.key);
+        $(".modal-body #txt_value").val(data.value);
+        $(".modal-body #txt_type").val(data.valueType);
     }
     function closeEditModal(){
         console.log("close Edit Modal");
         $('#myModal').hide();
     }
-    function fillDate(data) {
-        $(".modal-body #txt_id").val(data.id);
-        $(".modal-body #txt_name").val(data.name);
-        $(".modal-body #txt_topic").val(data.topic);
-        $(".modal-body #txt_template").val(data.template);
-        $(".modal-body #txt_window").val(data.window);
+    function showWarn(id,title,data,styles) {
+        console.log($("warn-" + id));
+        $("#warn-" + id + ">p").text(data);
+        $("#warn-" + id + ">strong").text(title);
+        $("#warn-" + id).removeClass("alert-success");
+        $("#warn-" + id).removeClass("alert-danger");
+        $("#warn-" + id).addClass(styles);
+        $("#warn-" + id).removeClass("hide");
     }
     function getData() {
         var id = $(".modal-body #txt_id").val();
+        var jobId = $(".modal-body #txt_jobId").val();
         var name = $(".modal-body #txt_name").val();
-        var topic = $(".modal-body #txt_topic").val();
-        var template = $(".modal-body #txt_template").val();
-        var window = $(".modal-body #txt_window").val();
+        var key = $(".modal-body #txt_key").val();
+        var value = $(".modal-body #txt_value").val();
+        var type = $(".modal-body #txt_type").val();
         return {
             "id":id,
+            "jobId":jobId,
             "name":name,
-            "topic":topic,
-            "template":template,
-            "window":window
+            "key":key,
+            "value":value,
+            "valueType":type
         }
     }
+    $(".close").click(function () {//关闭warn
+        console.log("close warning");
+        $(this).parent("div.alert").addClass("hide");
+        window.location.reload();
+    });
 })
