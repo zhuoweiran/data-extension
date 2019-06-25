@@ -94,7 +94,7 @@ $(document).ready(function(){
     });
     $(".modal-footer > button[name='close']").click(closeEditModal);//关闭
 
-    $(".close").click(function () {
+    $(".close").click(function () {//关闭warn
         console.log("close warning");
         $(this).parent("div.alert").addClass("hide");
         window.location.reload();
@@ -111,9 +111,9 @@ $(document).ready(function(){
         $.get("/msg-producer/msg/testTemplate/"+id,function(data){
             console.log(data);
             if(data.status.status == 0) {
-                showWarn(id,"SUCCESS",name + ":测试成功" + data.data ,"alert-success");
+                showWarn(id,"SUCCESS",name + ":测试成功,结果为" + data.data ,"alert-success");
             }else{
-                showWarn(id,"FAILD",name + ":测试失败" + data.data,"alert-danger");
+                showWarn(id,"FAILD",name + ":测试失败,错误为" + data.data,"alert-danger");
             }
         })
     })
