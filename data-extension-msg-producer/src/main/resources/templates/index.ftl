@@ -43,24 +43,30 @@
     <!-- Example row of columns -->
     <div id="start-table" class="row" style="display: none;">
         <div class="jumbotron">
-            <h1>start-table!</h1>
-            <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet.</p>
+            <h1>Message Producer</h1>
+            <p class="lead">定制化模拟厂站发送报文到大数据Kafka集群</p>
         </div>
         <div class="col-lg-4">
-            <h2>Safari bug warning!</h2>
-            <p class="text-danger">As of v9.1.2, Safari exhibits a bug in which resizing your browser horizontally causes rendering errors in the justified nav that are cleared upon refreshing.</p>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+            <h2>模板化消息体</h2>
+            <p>使用<a url="https://freemarker.apache.org/docs/index.html">Freemarker2.3.28</a>模板语法定制化</p>
+            <p>Freemarker是一款模板引擎，是一种基于模版生成静态文件的通用工具，它是使用纯java编写的。</p>
+            <p>Freemarker具有丰富的语法，如if-else判断，for循环等。还有丰富的内置函数。</p>
+            <p><a class="btn btn-primary" href="https://freemarker.apache.org/docs/index.html" role="button">查看Freemarker官网 &raquo;</a></p>
         </div>
         <div class="col-lg-4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+            <h2>自定义参数</h2>
+            <p>在模版中的参数，支持自定义。 </p>
+            <p>例如：xxxx,hello ${r'${foo}'},我们可以定义一个参数Key为foo，Value为world。我们最终得到的结果为：xxxx,hello world。</p>
+            <p><a class="btn btn-primary" id="task-btn" href="#" role="button">定义模版及参数 &raquo;</a></p>
         </div>
         <div class="col-lg-4">
-            <h2>Heading</h2>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
-            <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+            <h2>增强的参数</h2>
+            <p>除了普通的参数类型，如String/Int/Date。</p>
+            <p>还支持Array:支持Value定义一个Json Array,模版被渲染为消息体时会随机获取Array里面的一个值。</p>
+            <p>Object:支持Value定义一个Json Object,模板引擎会把这个Json Objec渲染到消息体。</p>
+            <p>Table_Device:模版被渲染为消息体时会随机获取一个已知资产。</p>
+            <p>Table_TmpDevice:模版被渲染为消息体时会随机获取一个未知资产。</p>
+            <p><a class="btn btn-primary" id="li-btn" href="#" role="button">查看常用的样例 &raquo;</a></p>
         </div>
     </div>
     <div id="task-table" class="row" style="display: block;">
@@ -137,8 +143,14 @@
                 </tbody>
             </table>
             <div class="btn-group">
-                <button id="add" type="button" class="btn btn-success">
-                    新增
+                <button id="get-start" type="button" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-menu-left"></span> Get Start
+                </button>
+                <button id="add" type="button" class="btn btn-success"> 新增
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <button id="list-rule" type="button" class="btn btn-primary"> Rule List
+                    <span class="glyphicon glyphicon-menu-right"></span>
                 </button>
             </div>
         </div>

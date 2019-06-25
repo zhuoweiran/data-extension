@@ -135,6 +135,7 @@
                             <option>String</option>
                             <option>Int</option>
                             <option>Date</option>
+                            <option>Array</option>
                             <option>Object</option>
                             <option>Table_Device</option>
                             <option>Table_TmpDevice</option>
