@@ -90,7 +90,7 @@
                         <td>${task?index}</td>
                         <td>${task.name}</td>
                         <td>${task.topic}</td>
-                        <td>${task.template}</td>
+                        <td>${task.template?substring(0,47)}...</td>
                         <td>${task.window}</td>
                         <td>${task.status?then('Running','Stoped')}</td>
                         <td>${task.lastSuccessTime?string('yyyy-MM-dd HH:mm:ss.SSS')}</td>
