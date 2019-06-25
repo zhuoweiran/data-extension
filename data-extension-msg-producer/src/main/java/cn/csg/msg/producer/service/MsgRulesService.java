@@ -5,10 +5,7 @@ import cn.csg.common.vo.DeviceTmpRedis;
 import cn.csg.msg.producer.bean.MsgRules;
 import cn.csg.msg.producer.bean.ValueType;
 import cn.csg.msg.producer.dao.MsgRulesDao;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.*;
 import com.google.common.collect.Maps;
 import io.codis.jodis.JedisResourcePool;
 import org.slf4j.Logger;
@@ -20,6 +17,7 @@ import redis.clients.jedis.Jedis;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 @Service
@@ -76,6 +74,17 @@ public class MsgRulesService {
                 DeviceTmpRedis deviceTmpRedis = JSONObject.parseObject(deviceJson, new TypeReference<DeviceTmpRedis>(){});
                 result.put(key, deviceTmpRedis);
                 jedis.close();
+
+            }else if(valueType == ValueType.Array){
+                try {
+                    JSONArray array = JSONArray.parseArray(value);
+                    Random random = new Random();
+                    int randIndex = random.nextInt(array.size());
+                    result.put(key, array.get(randIndex));
+                }catch (JSONException e){
+                    logger.error("值[{}]配置有误" ,value);
+                    throw new Exception(e);
+                }
 
             }else {
                 result.put(key, value);

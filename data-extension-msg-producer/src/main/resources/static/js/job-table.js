@@ -1,5 +1,7 @@
 $(document).ready(function(){
-    $("#start").click(function(){
+    $("#start").click(start);
+    $("#get-start").click(start)
+    function start(){
         console.log("start");
         $("#start").addClass("active");
         $("#start-table").show();
@@ -7,8 +9,10 @@ $(document).ready(function(){
         $("#task-table").hide();
         $("#rule-table").hide();
         $("#rule").removeClass("active");
-    });
-    $("#task").click(function(){
+    }
+    $("#task").click(taskclick);
+    $("#task-btn").click(taskclick)
+    function taskclick(){
         console.log("task");
         $("#start").removeClass("active");
         $("#start-table").hide();
@@ -16,15 +20,19 @@ $(document).ready(function(){
         $("#task-table").show();
         $("#rule-table").hide();
         $("#rule").removeClass("active");
-    });
-    $("#rule").click(function(){
+    }
+    $("#rule").click(ruleclick);
+    $("#list-rule").click(ruleclick);
+    function ruleclick(){
         console.log("rule");
         $("#start").removeClass("active");
         $("#task").removeClass("active");
         $("#rule").addClass("active");
+        $("#start-table").hide();
         $("#task-table").hide();
         $("#rule-table").show();
-    });
+    }
+
 
     $("#edit-list > button").click(function () {
         var id = $(this).siblings(".hidden[name='hidden-id']").html();
