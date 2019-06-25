@@ -10,12 +10,21 @@ import cn.csg.msg.producer.bean.ValueType;
 import cn.csg.msg.producer.service.JobService;
 import cn.csg.msg.producer.service.MsgJobService;
 import cn.csg.msg.producer.service.MsgRulesService;
+import freemarker.cache.StringTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -231,5 +240,41 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.DELETE)
         );
     }
+    @ApiOperation(value ="验证任务模版",httpMethod = "GET")
+    @GetMapping(value= "/testTemplate/{id}")
+    public ResultData testTemplate(@PathVariable(name = "id") String id) {
+        try {
+            Map<String, Object> rulesMap = msgRulesService.findAllRulesByJobId(id);
+            MsgJob job = msgJobService.findById(id);
 
+            StringTemplateLoader stringLoader = new StringTemplateLoader();
+            Configuration configuration = new Configuration();
+            stringLoader.putTemplate("job_" + job.getId(), job.getTemplate());
+            configuration.setTemplateLoader(stringLoader);
+            Template template = configuration.getTemplate("job_" + job.getId(), "utf-8");
+            //设置模版参数
+
+            //渲染模版为最终报文
+            StringWriter writer = new StringWriter();
+            template.process(rulesMap, writer);
+            String msg = writer.toString();
+
+            if (msg != null) {
+                MsgType msgType = job.getMsgType();
+                if (msgType == MsgType.Json) {
+                    //添加header 和 end
+                    msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+                }
+            }
+            return new ResultData<>(
+                    msg,
+                    ResultStatus.initStatus(StatusEnum.SUCCESS)
+            );
+        }catch (Exception e){
+            return new ResultData<>(
+                    e.getMessage(),
+                    ResultStatus.initStatus(StatusEnum.ERROR)
+            );
+        }
+    }
 }

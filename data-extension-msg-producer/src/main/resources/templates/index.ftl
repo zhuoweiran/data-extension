@@ -76,12 +76,13 @@
                     <th>发送频率<br>(秒/条)</th>
                     <th>状态</th>
                     <th>最后执行时间</th>
-                    <th></th>
+                    <th>操作</th>
+                    <th>验证</th>
                 </tr>
                 </thead>
                 <tbody>
                 <#list tasks as task>
-                    <div class="alert alert-warning alert-dismissible hide" id="warn-${task.id}" role="alert">
+                    <div class="alert alert-dismissible hide" id="warn-${task.id}" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <strong>Warning!</strong> <p></p>
                     </div>
@@ -90,9 +91,15 @@
                         <td>${task?index}</td>
                         <td>${task.name}</td>
                         <td>${task.topic}</td>
-                        <td>${task.template?substring(0,47)}...</td>
+                        <td>
+                            <#if task.template?length gt 47>
+                                ${task.template?substring(0,47)}...
+                            <#else>
+                                ${task.template}
+                            </#if>
+                        </td>
                         <td>${task.window}</td>
-                        <td>${task.status?then('Running','Stoped')}</td>
+                        <td>${task.status?then('运行中','已停止')}</td>
                         <td>${task.lastSuccessTime?string('yyyy-MM-dd HH:mm:ss.SSS')}</td>
                         <td>
                             <div class="btn-group" id="edit-list" role="group" aria-label="...">
@@ -111,6 +118,15 @@
                                 </button>
                                 <button type="button" class="btn btn-success" name="rule">
                                     <span class="glyphicon glyphicon-list"></span>
+                                </button>
+                                <div class="hidden" name="hidden-id">${task.id}</div>
+                                <div class="hidden" name="hidden-name">${task.name}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" name="test">
+                                    <span class="glyphicon glyphicon-console"></span>
                                 </button>
                                 <div class="hidden" name="hidden-id">${task.id}</div>
                                 <div class="hidden" name="hidden-name">${task.name}</div>
@@ -154,7 +170,7 @@
                     <div class="form-group">
                         <label for="txt_msgType">消息格式</label>
                         <select class="form-control" id="txt_msgType">
-                            <option>EText</option>
+                            <option selected>EText</option>
                             <option>Json</option>
                             <option>NoHeadJson</option>
                         </select>
