@@ -43,11 +43,11 @@ public class MsgTask extends QuartzJobBean {
 
         StringTemplateLoader stringLoader = new StringTemplateLoader();
         Configuration configuration = new Configuration();
-        stringLoader.putTemplate("job_" + job.getId(),job.getTemplate());
+        stringLoader.putTemplate("job_" + job.getId(), job.getTemplate());
         configuration.setTemplateLoader(stringLoader);
         String msg = null;
         try {
-            Template template = configuration.getTemplate("job_" + job.getId(),"utf-8");
+            Template template = configuration.getTemplate("job_" + job.getId(), "utf-8");
             //设置模版参数
             Map<String, Object> configMap = rulesService.findAllRulesByJobId(job.getId());
 
@@ -63,20 +63,18 @@ public class MsgTask extends QuartzJobBean {
             e.printStackTrace();
         }
 
-        if(msg != null) {
+        if (msg != null) {
             MsgType msgType = job.getMsgType();
-            if(msgType == MsgType.Json){
+            if (msgType == MsgType.Json) {
                 //添加header 和 end
-                if (job.getTopic().equalsIgnoreCase("CommPair")) {
-                    msg = "<?begn?>\u0000\u0003\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
-                }else if(job.getTopic().equalsIgnoreCase("UnidentifiedFile")){
-                    msg = "<?begn?>\u0000\u0005\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
-                }else {
-                    msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
-                }
+                msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+            }else if(msgType == MsgType.CommPair){
+                msg = "<?begn?>\u0000\u0003\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+            }else if(msgType == MsgType.UnidentifiedFile){
+                msg = "<?begn?>\u0000\u0005\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
             }
             producer.send(new ProducerRecord<>(job.getTopic(), msg));
-        }else {
+        } else {
             logger.error("添加任务[{}]失败", job.getName());
         }
     }
