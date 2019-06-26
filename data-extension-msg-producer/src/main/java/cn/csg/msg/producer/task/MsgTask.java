@@ -67,7 +67,13 @@ public class MsgTask extends QuartzJobBean {
             MsgType msgType = job.getMsgType();
             if(msgType == MsgType.Json){
                 //添加header 和 end
-                msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+                if (job.getTopic().equalsIgnoreCase("CommPair")) {
+                    msg = "<?begn?>\u0000\u0003\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+                }else if(job.getTopic().equalsIgnoreCase("UnidentifiedFile")){
+                    msg = "<?begn?>\u0000\u0005\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+                }else {
+                    msg = "<?begn?>\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
+                }
             }
             producer.send(new ProducerRecord<>(job.getTopic(), msg));
         }else {
