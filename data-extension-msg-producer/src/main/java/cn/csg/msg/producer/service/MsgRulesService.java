@@ -8,6 +8,7 @@ import cn.csg.msg.producer.dao.MsgRulesDao;
 import com.alibaba.fastjson.*;
 import com.google.common.collect.Maps;
 import io.codis.jodis.JedisResourcePool;
+import org.apache.tomcat.util.digester.Rules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

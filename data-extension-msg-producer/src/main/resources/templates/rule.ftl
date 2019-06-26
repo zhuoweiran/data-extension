@@ -69,7 +69,7 @@
                     </div>
                     <tr>
 
-                        <td>${rule?index}</td>
+                        <td>${rule?index + 1}</td>
                         <td>${rule.id}</td>
                         <td>${rule.jobId}</td>
                         <td>${rule.name}</td>

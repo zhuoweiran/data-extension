@@ -31,21 +31,4 @@
             <version>2.9.1</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <compilerArguments>
-                        <XprintProcessorInfo />
-                        <XprintRounds />
-                    </compilerArguments>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

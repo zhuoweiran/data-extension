@@ -94,7 +94,7 @@
                     </div>
                     <tr>
 
-                        <td>${task?index}</td>
+                        <td>${task?index + 1}</td>
                         <td>${task.name}</td>
                         <td>${task.topic}</td>
                         <td>
