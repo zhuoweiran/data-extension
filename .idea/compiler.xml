@@ -16,14 +16,14 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="data-extension" target="1.5" />
-      <module name="data-extension-api" target="1.5" />
+      <module name="data-extension" target="1.8" />
+      <module name="data-extension-api" target="1.8" />
       <module name="data-extension-common" target="1.8" />
-      <module name="data-extension-core" target="1.5" />
-      <module name="data-extension-es-client" target="1.5" />
-      <module name="data-extension-job-schedule" target="1.5" />
-      <module name="data-extension-msg-producer" target="1.5" />
-      <module name="data-extension-util" target="1.5" />
+      <module name="data-extension-core" target="1.8" />
+      <module name="data-extension-es-client" target="1.8" />
+      <module name="data-extension-job-schedule" target="1.8" />
+      <module name="data-extension-msg-producer" target="1.8" />
+      <module name="data-extension-util" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

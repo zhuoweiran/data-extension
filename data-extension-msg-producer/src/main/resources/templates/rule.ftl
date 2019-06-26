@@ -134,7 +134,9 @@
                         <select class="form-control" id="txt_type">
                             <option>String</option>
                             <option>Int</option>
+                            <!-- //去掉对date的支持，freemarker自带的日期及函数已足够使用
                             <option>Date</option>
+                            -->
                             <option>Array</option>
                             <option>Object</option>
                             <option>Table_Device</option>
@@ -153,7 +155,7 @@
 
     <!-- Site footer -->
     <footer class="footer">
-        <p>&copy; 2016 csg, Inc.</p>
+        <p>&copy; 2019 Zhuoweiran, Inc.</p>
     </footer>
 
 </div> <!-- /container -->

@@ -18,6 +18,8 @@
         <module>data-extension-msg-producer</module>
     </modules>
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <fastjson.version>1.2.10</fastjson.version>
         <spring.boot.vresion>2.1.0.RELEASE</spring.boot.vresion>
         <de.version>1.2-SNAPSHOT</de.version>

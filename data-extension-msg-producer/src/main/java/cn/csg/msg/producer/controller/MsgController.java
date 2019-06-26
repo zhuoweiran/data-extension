@@ -168,7 +168,7 @@ public class MsgController {
         MsgJob msgJob = new MsgJob();
         msgJob.setName("test2");
         msgJob.setTopic("test");
-        msgJob.setTemplate("${guid}^${now?string('yyyy-MM-dd HH:mm:ss.SSS')}^${num*100}");
+        msgJob.setTemplate("${guid}^${.now?string('yyyy-MM-dd HH:mm:ss.SSS')}^${num*100}");
         msgJob.setWindow(10);
         msgJob.setStatus(false);
         msgJob.setMsgType(MsgType.EText);
@@ -182,13 +182,13 @@ public class MsgController {
         msgRules.setName("guid");
         msgRules.setStatus(true);
         msgRules.setValueType(ValueType.String);
-
-        MsgRules msgRules1 = new MsgRules();
-        msgRules1.setJobId(result.getId());
-        msgRules1.put("now", "Today");
-        msgRules1.setName("now");
-        msgRules1.setStatus(true);
-        msgRules1.setValueType(ValueType.Date);
+//
+//        MsgRules msgRules1 = new MsgRules();
+//        msgRules1.setJobId(result.getId());
+//        msgRules1.put("now", "Today");
+//        msgRules1.setName("now");
+//        msgRules1.setStatus(true);
+//        msgRules1.setValueType(ValueType.Date);
 
         MsgRules msgRules2 = new MsgRules();
         msgRules2.setJobId(result.getId());
@@ -198,7 +198,7 @@ public class MsgController {
         msgRules2.setValueType(ValueType.Int);
 
         msgRulesService.save(msgRules);
-        msgRulesService.save(msgRules1);
+//        msgRulesService.save(msgRules1);
         msgRulesService.save(msgRules2);
 
         return new ResultData<>(
