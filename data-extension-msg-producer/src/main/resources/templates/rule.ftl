@@ -126,10 +126,6 @@
                         <input type="text" name="txt_key" class="form-control" id="txt_key" placeholder="key">
                     </div>
                     <div class="form-group">
-                        <label for="txt_value">Value</label>
-                        <input type="text" name="txt_value" class="form-control" id="txt_value" placeholder="123">
-                    </div>
-                    <div class="form-group">
                         <label for="txt_type">类型</label>
                         <select class="form-control" id="txt_type">
                             <option>String</option>
@@ -143,6 +139,11 @@
                             <option>Table_TmpDevice</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="txt_value">Value</label>
+                        <input type="text" name="txt_value" class="form-control" id="txt_value" placeholder="123">
+                    </div>
+
 
                 </div>
                 <div class="modal-footer">

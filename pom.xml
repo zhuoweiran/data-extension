@@ -16,6 +16,7 @@
         <module>data-extension-job-schedule</module>
         <module>data-extension-es-client</module>
         <module>data-extension-msg-producer</module>
+        <module>data-extension-annotation</module>
     </modules>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

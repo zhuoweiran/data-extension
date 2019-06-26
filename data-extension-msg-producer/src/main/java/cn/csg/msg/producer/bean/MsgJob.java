@@ -22,6 +22,7 @@ public class MsgJob {
     private String name;
     private boolean status;
     private String topic;
+    @Column(name = "job_window")
     private int window;
     @Enumerated(EnumType.STRING)
     private MsgType msgType;

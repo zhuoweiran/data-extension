@@ -177,7 +177,8 @@
                     </div>
                     <div class="form-group">
                         <label for="txt_template">模板</label>
-                        <input type="text" name="txt_template" class="form-control" id="txt_template" placeholder="xxxxxxxx">
+                        <#--<input type="text" name="txt_template" class="form-control" id="txt_template" placeholder="xxxxxxxx">-->
+                        <textarea rows="5" name="txt_template" class="form-control" id="txt_template" placeholder="xxxxxxxx"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="txt_msgType">消息格式</label>

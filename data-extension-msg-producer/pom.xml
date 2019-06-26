@@ -58,10 +58,18 @@
             <artifactId>spring-boot-starter-quartz</artifactId>
             <version>${spring.boot.vresion}</version>
         </dependency>
+        <!-- 改为内置的derby
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.11</version>
+            <scope>runtime</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.14.2.0</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Swagger -->
