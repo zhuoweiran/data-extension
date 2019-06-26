@@ -45,14 +45,15 @@ public class MsgRulesService {
                 result.put(key, value);
             }else if(valueType == ValueType.Int) {
                 result.put(key, Integer.valueOf(value));
-            }else if(valueType == ValueType.Date){
+                //去掉对date的支持，freemarker自带的日期及函数已足够使用
+            /*}else if(valueType == ValueType.Date){
                 if("Today".equals(value)){
                     result.put(key, new Date());
                 }else if("Yesterday".equals(value)) {
                     result.put(key, new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
                 }else {
                     result.put(key, new Date());
-                }
+                }*/
             }else if(valueType == ValueType.Object){
                 try {
                     JSONObject jsonObject = JSON.parseObject(value);
