@@ -183,8 +183,10 @@
                         <label for="txt_msgType">消息格式</label>
                         <select class="form-control" id="txt_msgType">
                             <option selected>EText</option>
-                            <option>Json</option>
                             <option>NoHeadJson</option>
+                            <option>Json</option>
+                            <option>CommPair</option>
+                            <option>UnidentifiedFile</option>
                         </select>
                     </div>
                     <div class="form-group">
