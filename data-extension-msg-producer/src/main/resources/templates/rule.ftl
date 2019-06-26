@@ -69,7 +69,7 @@
                     </div>
                     <tr>
 
-                        <td>${rule?index}</td>
+                        <td>${rule?index + 1}</td>
                         <td>${rule.id}</td>
                         <td>${rule.jobId}</td>
                         <td>${rule.name}</td>
@@ -153,7 +153,7 @@
 
     <!-- Site footer -->
     <footer class="footer">
-        <p>&copy; 2016 csg, Inc.</p>
+        <p>&copy; 2019 Zhuoweiran, Inc.</p>
     </footer>
 
 </div> <!-- /container -->

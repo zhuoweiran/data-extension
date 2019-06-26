@@ -8,6 +8,7 @@ import cn.csg.msg.producer.dao.MsgRulesDao;
 import com.alibaba.fastjson.*;
 import com.google.common.collect.Maps;
 import io.codis.jodis.JedisResourcePool;
+import org.apache.tomcat.util.digester.Rules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,14 @@ public class MsgRulesService {
     }
     public void delete(MsgRules rules){
         msgRulesDao.delete(rules);
+    }
+    public void deleteAll(List<MsgRules> rulesList){
+        for(MsgRules rules : rulesList){
+            delete(rules);
+        }
+    }
+    public void deleteAllByJobId(String jobId){
+        deleteAll(findAllByJobId(jobId));
     }
 
 }

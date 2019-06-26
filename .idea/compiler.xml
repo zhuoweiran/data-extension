@@ -28,13 +28,13 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="data-extension-api" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-common" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-core" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-es-client" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-job-schedule" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-msg-producer" options="-XprintProcessorInfo -XprintRounds" />
-      <module name="data-extension-util" options="-XprintProcessorInfo -XprintRounds" />
+      <module name="data-extension-api" options="" />
+      <module name="data-extension-common" options="" />
+      <module name="data-extension-core" options="" />
+      <module name="data-extension-es-client" options="" />
+      <module name="data-extension-job-schedule" options="" />
+      <module name="data-extension-msg-producer" options="" />
+      <module name="data-extension-util" options="" />
     </option>
   </component>
 </project>

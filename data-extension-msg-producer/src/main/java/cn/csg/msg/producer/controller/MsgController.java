@@ -142,6 +142,8 @@ public class MsgController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //todo
+        msgRulesService.deleteAllByJobId(jobId);
         msgJobService.delete(job);
         return new ResultData<>(null, ResultStatus.initStatus(StatusEnum.DELETE));
     }
