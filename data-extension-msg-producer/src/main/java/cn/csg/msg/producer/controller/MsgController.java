@@ -137,7 +137,7 @@ public class MsgController {
      * @param jobId 任务id
      * @param name 任务名称
      * @param template 任务模板
-     * @param topic topic
+     * @param topic Topic
      * @param window 执行周期
      * @param status 状态
      * @return {@code ResultData<MsgJob>}
@@ -190,7 +190,7 @@ public class MsgController {
      * <p>URL:/msg-producer/msg/update</p>
      *
      * @param jobId
-     * @return
+     * @return {@code ResultData}
      */
     @ApiOperation(value ="删除任务",httpMethod = "GET")
     @GetMapping(value= "/delete/{jobId}")
@@ -207,6 +207,13 @@ public class MsgController {
         return new ResultData<>(null, ResultStatus.initStatus(StatusEnum.DELETE));
     }
 
+    /**
+     * 停止一个任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/stop/{jobId}</p>
+     * @param jobId 任务id
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="停止任务",httpMethod = "GET")
     @GetMapping(value= "/stop/{jobId}")
     public ResultData stopJob(@PathVariable(name = "jobId") String jobId){
@@ -221,6 +228,12 @@ public class MsgController {
         return new ResultData<>(msgJobService.save(job), ResultStatus.initStatus(StatusEnum.SUCCESS));
     }
 
+    /**
+     * 初始化一个测试任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/init</p>
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="初始化一个测试任务",httpMethod = "GET")
     @GetMapping(value= "/init")
     public ResultData init(){
@@ -265,6 +278,15 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.UPDATE)
         );
     }
+
+    /**
+     * 通过任务id查询一个任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/findJob/{id}</p>
+     *
+     * @param id 任务id
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="通过id查询一个任务",httpMethod = "GET")
     @GetMapping(value= "/findJob/{id}")
     public ResultData findMsgJobById(@PathVariable(name = "id") String id){
@@ -274,6 +296,14 @@ public class MsgController {
         );
     }
 
+    /**
+     * 通过参数id查询参数列表
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/findRule/{id}</p>
+     *
+     * @param id 参数id
+     * @return {@code ResultData<MsgRules>}
+     */
     @ApiOperation(value ="通过id查询一个任务规则",httpMethod = "GET")
     @GetMapping(value= "/findRule/{id}")
     public ResultData findMsgRulesById(@PathVariable(name = "id") String id){
@@ -282,6 +312,14 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
+
+    /**
+     * 更新任务参数
+     * <p>HttpMethod:Post</p>
+     * <p>URL:/msg-producer/msg/saveRule</p>
+     * @param rules 参数
+     * @return {@code ResultData<MsgRules>}
+     */
     @ApiOperation(value ="更新一个任务规则",httpMethod = "POST")
     @PostMapping(value= "/saveRule")
     public ResultData saveRules(MsgRules rules){
@@ -291,6 +329,15 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
+
+    /**
+     * 删除一个任务参数
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/deleteRule/{id}</p>
+     *
+     * @param id 参数id
+     * @return {@code ResultData}
+     */
     @ApiOperation(value ="删除一个任务规则",httpMethod = "GET")
     @GetMapping(value= "/deleteRule/{id}")
     public ResultData deleteRules(@PathVariable(name = "id") String id){
@@ -301,6 +348,15 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.DELETE)
         );
     }
+
+    /**
+     * 验证任务配置
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/testTemplate/{id}</p>
+     *
+     * @param id 任务id
+     * @return {@code ResultData<String>}
+     */
     @ApiOperation(value ="验证任务模版",httpMethod = "GET")
     @GetMapping(value= "/testTemplate/{id}")
     public ResultData testTemplate(@PathVariable(name = "id") String id) {
