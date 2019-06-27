@@ -9,6 +9,22 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
+/**
+ * 类{@code KafkaProducerSource}初始化一个Kafka Producer
+ *
+ * <p>创建一个Kafka Producer</p>
+ * <pre class="code">
+ * 使用方法
+ * &#64;Autowired
+ * private KafkaProducerSource kafkaProducerSource;
+ *
+ * </pre>
+ *
+ * @author Alex Han
+ * @since 1.0
+ * @version 1.2
+ *
+ */
 @Configuration
 public class KafkaProducerSource {
     @Value("${kafka.bigdata.bootstrap.servers}")

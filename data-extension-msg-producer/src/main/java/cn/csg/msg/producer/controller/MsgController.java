@@ -26,7 +26,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * 类{@code MsgController} RESTFul 接口
+ *
+ * @author Alex Han
+ * @since 1.0
+ * @version 1.2
+ */
 @RestController
 @RequestMapping("/msg")
 public class MsgController {
@@ -39,6 +45,13 @@ public class MsgController {
     @Autowired
     private JobService jobService;
 
+    /**
+     * 查询所有任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/list</p>
+     *
+     * @return {@code ResultData<List<MsgJob>>}
+     */
     @ApiOperation(value ="查询所有任务",httpMethod = "GET")
     @GetMapping(value= "/list")
     public ResultData list(){
@@ -48,6 +61,13 @@ public class MsgController {
         );
     }
 
+    /**
+     * 查询所有有效任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/enableList</p>
+     *
+     * @return {@code ResultData<List<MsgJob>>}
+     */
     @ApiOperation(value ="查询所有有效任务",httpMethod = "GET")
     @GetMapping(value= "/enableList")
     public ResultData enableList(){
@@ -56,6 +76,15 @@ public class MsgController {
                 ResultStatus.initStatus(StatusEnum.SUCCESS)
         );
     }
+
+    /**
+     * 新增任务
+     * <p>HttpMethod:Post</p>
+     * <p>URL:/msg-producer/msg/save</p>
+     *
+     * @param msgJob 任务
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="新增任务",httpMethod = "POST")
     @PostMapping(value= "/save")
     public ResultData save(MsgJob msgJob){
@@ -79,6 +108,14 @@ public class MsgController {
         );
     }
 
+    /**
+     * 启动一个任务
+     * <p>HttpMethod:Get</p>
+     * <p>URL:/msg-producer/msg/satrt/{jobId}</p>
+     *
+     * @param jobId 任务id
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="启动任务",httpMethod = "GET")
     @GetMapping(value= "/satrt/{jobId}")
     public ResultData startJob(@PathVariable(name = "jobId") String jobId){
@@ -92,6 +129,19 @@ public class MsgController {
         return new ResultData<>(msgJobService.save(job), ResultStatus.initStatus(StatusEnum.UPDATE));
     }
 
+    /**
+     * 更新一个任务
+     * <p>HttpMethod:Post</p>
+     * <p>URL:/msg-producer/msg/update</p>
+     *
+     * @param jobId 任务id
+     * @param name 任务名称
+     * @param template 任务模板
+     * @param topic topic
+     * @param window 执行周期
+     * @param status 状态
+     * @return {@code ResultData<MsgJob>}
+     */
     @ApiOperation(value ="更新任务",httpMethod = "POST")
     @PostMapping(value= "/update")
     public ResultData updateJob(
@@ -133,6 +183,15 @@ public class MsgController {
         return new ResultData<>(msgJobService.save(job), ResultStatus.initStatus(StatusEnum.UPDATE));
     }
 
+
+    /**
+     * 更新一个任务
+     * <p>HttpMethod:Post</p>
+     * <p>URL:/msg-producer/msg/update</p>
+     *
+     * @param jobId
+     * @return
+     */
     @ApiOperation(value ="删除任务",httpMethod = "GET")
     @GetMapping(value= "/delete/{jobId}")
     public ResultData deleteJob(@PathVariable(name = "jobId") String jobId){

@@ -7,6 +7,16 @@ import org.hibernate.annotations.Proxy;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * 类{@code MsgJob}消息任务JavaBean.
+ *
+ * <p>定义一个消息任务，用于序列化于存储中</p>
+ *
+ * @author Alex Han
+ * @since 1.0
+ * @version 1.2
+ *
+ */
 @Data
 @Entity
 @Table(name = "t_msg_job")

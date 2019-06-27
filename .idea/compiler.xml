@@ -17,6 +17,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="data-extension" target="1.8" />
+      <module name="data-extension-annotation" target="1.8" />
       <module name="data-extension-api" target="1.8" />
       <module name="data-extension-common" target="1.8" />
       <module name="data-extension-core" target="1.8" />

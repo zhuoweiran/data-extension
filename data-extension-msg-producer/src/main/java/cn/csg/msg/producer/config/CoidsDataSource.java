@@ -7,6 +7,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPoolConfig;
 
+/**
+ * 类{@code CoidsDataSource}初始化codis连接池
+ *
+ * <p>创建一个codis连接池</p>
+ * <pre class="code">
+ * 使用方法
+ * &#64;Autowired
+ * private JedisResourcePool jedisResourcePool;
+ * 获取一个jedis连接
+ * Jedis jedis = jedisResourcePool.getResource();
+ * 回收jedis连接
+ * jedis.close();
+ *
+ * </pre>
+ *
+ * @author Alex Han
+ * @since 1.0
+ * @version 1.2
+ *
+ */
 @Configuration
 public class CoidsDataSource {
     @Value("${jedis.zk.connect.host}")
