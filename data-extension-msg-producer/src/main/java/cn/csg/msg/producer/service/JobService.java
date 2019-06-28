@@ -14,6 +14,13 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ * <p>类{@code IndexController} 页面跳转控制
+ *
+ * @author Alex Han
+ * @since 1.0
+ * @version 1.2
+ */
 @Component
 public class JobService {
     private final Logger logger = LoggerFactory.getLogger(JobService.class);

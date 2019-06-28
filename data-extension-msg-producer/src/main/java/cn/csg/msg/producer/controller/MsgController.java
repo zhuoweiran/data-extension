@@ -189,7 +189,7 @@ public class MsgController {
      * <p>HttpMethod:Post</p>
      * <p>URL:/msg-producer/msg/update</p>
      *
-     * @param jobId
+     * @param jobId 任务id
      * @return {@code ResultData}
      */
     @ApiOperation(value ="删除任务",httpMethod = "GET")

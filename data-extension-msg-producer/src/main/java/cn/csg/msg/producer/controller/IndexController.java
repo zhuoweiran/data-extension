@@ -24,7 +24,7 @@ public class IndexController {
 
     /**
      * 跳转到/test
-     * @param map
+     * @param map 返回任务列表和参数列表
      * @return 跳转到test页面
      */
     @RequestMapping("/test")
