@@ -8,17 +8,13 @@ import cn.csg.msg.producer.dao.MsgRulesDao;
 import com.alibaba.fastjson.*;
 import com.google.common.collect.Maps;
 import io.codis.jodis.JedisResourcePool;
-import org.apache.tomcat.util.digester.Rules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 
 /**
@@ -109,14 +105,37 @@ public class MsgRulesService {
                     result.put(key, array.get(randIndex));
                 }catch (JSONException e){
                     logger.error("值[{}]配置有误" ,value);
-                    throw new Exception(e);
+                    throw new RuntimeException(e);
                 }
 
+            }else if(valueType == ValueType.Random_int){//新增随机int类型
+
+                JSONArray array = JSONArray.parseArray(value);
+                if(array.size() != 2){
+                    logger.error("值[{}]配置有误" ,value);
+                    throw new RuntimeException("值[{" + value + "}]配置有误");
+                }
+                int randomInt = rangeRandomInt(array.getInteger(0), array.getInteger(1));
+                result.put(key, randomInt);
+            }else if(valueType == ValueType.GUID){//新增随机GUID类型
+                result.put(key, UUID.randomUUID());
             }else {
                 result.put(key, value);
             }
         }
         return result;
+    }
+
+    /**
+     * 生成一个范围的随机数
+     * @param start 范围开始，包含
+     * @param end 范围结束，不包含
+     * @return
+     */
+    private int rangeRandomInt(int start, int end){
+        Random random = new Random();
+        int randIndex = random.nextInt(end - start);
+        return randIndex + start;
     }
 
     /**
