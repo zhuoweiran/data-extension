@@ -108,7 +108,7 @@ public class MsgRulesService {
                     throw new RuntimeException(e);
                 }
 
-            }else if(valueType == ValueType.Random_int){//新增随机int类型
+            }else if(valueType == ValueType.Random_Int){//新增随机int类型
 
                 JSONArray array = JSONArray.parseArray(value);
                 if(array.size() != 2){

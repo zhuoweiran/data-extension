@@ -137,6 +137,9 @@
                             <option>Object</option>
                             <option>Table_Device</option>
                             <option>Table_TmpDevice</option>
+                            <!-- 增加范围随机整数 和 guid -->
+                            <option>Random_Int</option>
+                            <option>GUID</option>
                         </select>
                     </div>
                     <div class="form-group">
