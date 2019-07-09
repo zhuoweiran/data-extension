@@ -71,14 +71,17 @@ $(document).ready(function(){
             $('#myModal').show();
             console.log("编辑:" + id);
         }else if(btnName == "delete"){
-            console.log("删除" + id);
-            $.get("/msg-producer/msg/delete/" + id,function (data) {
-                if(data.status.status == 0){
-                    showWarn(id,"SUCCESS",name + ":删除成功","alert-success");
-                }else{
-                    showWarn(id,"FAILD",name + ":删除失败","alert-danger");
-                }
-            });
+            var deleted = confirm("客官, 您确定要删除任务???");
+            if (deleted) {
+                console.log("删除" + id);
+                $.get("/msg-producer/msg/delete/" + id,function (data) {
+                    if(data.status.status == 0){
+                        showWarn(id,"SUCCESS",name + ":删除成功","alert-success");
+                    }else{
+                        showWarn(id,"FAILD",name + ":删除失败","alert-danger");
+                    }
+                });
+            }
         }else if(btnName == "rule"){
             window.open("/msg-producer/rule/"+id,"_blank");
         }

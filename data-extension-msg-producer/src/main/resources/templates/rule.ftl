@@ -140,6 +140,10 @@
                             <!-- 增加范围随机整数 和 guid -->
                             <option>Random_Int</option>
                             <option>GUID</option>
+                            <!-- 原文转成base64编码 -->
+                            <option>Base64Str</option>
+                            <!-- 签名64位长度 -->
+                            <option>Sign64B</option>
                         </select>
                     </div>
                     <div class="form-group">

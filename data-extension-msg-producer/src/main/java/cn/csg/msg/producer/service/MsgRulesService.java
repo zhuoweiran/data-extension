@@ -5,6 +5,7 @@ import cn.csg.common.vo.DeviceTmpRedis;
 import cn.csg.msg.producer.bean.MsgRules;
 import cn.csg.msg.producer.bean.ValueType;
 import cn.csg.msg.producer.dao.MsgRulesDao;
+import cn.csg.msg.producer.util.Base64Util;
 import com.alibaba.fastjson.*;
 import com.google.common.collect.Maps;
 import io.codis.jodis.JedisResourcePool;
@@ -119,6 +120,13 @@ public class MsgRulesService {
                 result.put(key, randomInt);
             }else if(valueType == ValueType.GUID){//新增随机GUID类型
                 result.put(key, UUID.randomUUID());
+            }else if (valueType == ValueType.Sign64B) {
+                String var = UUID.randomUUID().toString();
+                String var1_4 = var.replace("-", "");
+                String sign = var1_4 + var1_4;
+                result.put(key, sign);
+            }else if (valueType == ValueType.Base64Str) {
+                result.put(key, Base64Util.getBase64(value));
             }else {
                 result.put(key, value);
             }

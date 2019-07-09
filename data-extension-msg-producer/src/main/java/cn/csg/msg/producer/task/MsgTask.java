@@ -72,6 +72,8 @@ public class MsgTask extends QuartzJobBean {
                 msg = "<?begn?>\u0000\u0003\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
             }else if(msgType == MsgType.UnidentifiedFile){
                 msg = "<?begn?>\u0000\u0005\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "1234567812345678123456781234567812345678123456781234567812345678**content**<?endn?>";
+            }else if(msgType == MsgType.UnAnalysisFile) {
+                msg = "<?begn?>\u0000\u0004\u0000\u0001\u0000\u0001\u0000\u0001" + msg + "<?endn?>";
             }
             producer.send(new ProducerRecord<>(job.getTopic(), msg));
         } else {

@@ -188,6 +188,7 @@
                             <option>Json</option>
                             <option>CommPair</option>
                             <option>UnidentifiedFile</option>
+                            <option>UnAnalysisFile</option>
                         </select>
                     </div>
                     <div class="form-group">

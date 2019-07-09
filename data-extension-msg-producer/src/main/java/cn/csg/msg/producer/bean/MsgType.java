@@ -16,5 +16,5 @@ package cn.csg.msg.producer.bean;
  *
  */
 public enum  MsgType {
-    EText,Json,NoHeadJson,CommPair,UnidentifiedFile
+    EText,Json,NoHeadJson,CommPair,UnidentifiedFile,UnAnalysisFile
 }
