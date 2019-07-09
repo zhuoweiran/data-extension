@@ -33,6 +33,22 @@ $(document).ready(function(){
         $("#rule-table").show();
     }
 
+    $("#edit-list").load(btnDisable())
+
+    function btnDisable() {
+        console.log("===");
+        $("button").each(function () {
+            var name = $(this).attr("name");
+            if (name == "start" || name == "stop") {
+                var status = $(this).parent().parent().prev().prev().html();
+                if (status == "运行中" && name == "start") {
+                    $(this).attr("disabled", true);
+                } else if (status == "已停止" && name == "stop") {
+                    $(this).attr("disabled", true);
+                }
+            }
+        });
+    }
 
     $("#edit-list > button").click(function () {
         var id = $(this).siblings(".hidden[name='hidden-id']").html();
@@ -41,6 +57,8 @@ $(document).ready(function(){
 
         if(btnName=="stop"){
             console.log("暂停" + id);
+            $(this).attr("disabled", true);
+            $(this).siblings(".btn[name='start']").removeAttr("disabled")
             $.get("/msg-producer/msg/stop/" + id,function (data) {
                 if(data.status.status == 0){
                     showWarn(id,"SUCCESS",name + ":暂停成功" ,"alert-success");
@@ -51,6 +69,8 @@ $(document).ready(function(){
 
         }else if(btnName == "start"){
             console.log("启动" + id);
+            $(this).attr("disabled", true);
+            $(this).siblings(".btn[name='stop']").removeAttr("disabled")
             $.get("/msg-producer/msg/satrt/" + id,function (data) {
                 if(data.status.status == 0){
                     showWarn(id,"SUCCESS",name + ":启动成功","alert-success");
