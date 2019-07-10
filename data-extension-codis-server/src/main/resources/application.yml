@@ -25,4 +25,3 @@ jedis:
   softMinEvictableIdleTimeMillis: 5000
 logging:
   file: info.log
-  level: info
