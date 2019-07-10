@@ -165,7 +165,7 @@
                 </executions>
                 <configuration>
                     <repository>${docker.repostory.name}</repository>
-                    <tag>1.2</tag>
+                    <tag>v1.2</tag>
                 </configuration>
             </plugin>
         </plugins>

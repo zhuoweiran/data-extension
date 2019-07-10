@@ -17,7 +17,7 @@ import java.util.List;
  * <p>提供restful服务控制
  *
  * @author Alex Han
- * @version 1.0
+ * @version 1.2
  */
 @RestController
 @RequestMapping("/codis")
@@ -33,7 +33,7 @@ public class CodisController {
      * URL: /coids/find/{guid}
      *
      * @param guid 唯一id的key
-     * @return Mono<DeviceBean>
+     * @return ResultData
      */
     @GetMapping("/find/{guid}")
     public Mono<ResultData> findDeviceByGuid(@PathVariable(name = "guid") String guid){
@@ -47,7 +47,7 @@ public class CodisController {
      * URL: /codis/update
      *
      * @param listStr device list json string
-     * @return Mono<ResultData>
+     * @return ResultData
      */
     @PostMapping("/update")
     public Mono<ResultData> updateDevices(
@@ -68,7 +68,7 @@ public class CodisController {
      * HttpMethod: Get
      * URL: /codis/status
      *
-     * @return Mono<ResultData>
+     * @return ResultData
      */
     @GetMapping("/status")
     public Mono<ResultData> showStatus(){

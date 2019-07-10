@@ -7,7 +7,7 @@ import lombok.Data;
  * 类{@code DeviceBean}资产
  *
  * @author Alex Han
- * @version 1.0
+ * @version 1.2
  */
 @Data
 public class DeviceBean {

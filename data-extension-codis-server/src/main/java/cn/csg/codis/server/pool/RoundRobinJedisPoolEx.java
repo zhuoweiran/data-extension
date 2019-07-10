@@ -32,6 +32,13 @@ import static org.apache.curator.framework.imps.CuratorFrameworkState.LATENT;
 import static org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode.BUILD_INITIAL_CACHE;
 import static org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type.*;
 
+/**
+ * 类{@code RoundRobinJedisPoolEx}codis资源池
+ * <p>在RoundRobinJedisPool的基础上，新增了查看资源池状态的方法
+ *
+ * @author Alex Han
+ * @version 1.2
+ */
 public class RoundRobinJedisPoolEx implements JedisResourcePool {
     private static final Logger LOG = LoggerFactory.getLogger(RoundRobinJedisPoolEx.class);
 
@@ -375,6 +382,11 @@ public class RoundRobinJedisPoolEx implements JedisResourcePool {
         }
 
     }
+
+    /**
+     * 查看资源池每一个节点的状态
+     * @return List
+     */
     public List<PoolStatus> status(){
         List<PoolStatus> poolStatuses = Lists.newArrayList();
 

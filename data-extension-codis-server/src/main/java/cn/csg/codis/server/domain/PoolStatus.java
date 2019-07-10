@@ -4,6 +4,12 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 类{@code PoolStatus}资源池状态
+ *
+ * @author Alex Han
+ * @version 1.2
+ */
 @Data
 @Builder
 public class PoolStatus {

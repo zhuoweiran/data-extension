@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * 类{@code CodisPool}初始化一个jedis连接池
  *
  * @author Alex Han
- * @version 1.0
+ * @version 1.2
  */
 @Configuration
 public class CodisPool {
