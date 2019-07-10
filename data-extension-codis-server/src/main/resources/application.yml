@@ -23,3 +23,6 @@ jedis:
   minIdle: 10
   maxWaitMillis: 10000
   softMinEvictableIdleTimeMillis: 5000
+logging:
+  file: info.log
+  level: info
