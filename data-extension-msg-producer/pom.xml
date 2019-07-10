@@ -22,6 +22,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <docker.repostory.name>msg-producer</docker.repostory.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>cn.csg</groupId>
@@ -144,6 +149,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.4</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>${docker.repostory.name}</repository>
+                    <tag>1.2</tag>
+                </configuration>
             </plugin>
         </plugins>
     </build>

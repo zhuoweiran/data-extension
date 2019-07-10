@@ -1,0 +1,3 @@
+FROM openjdk:8u191-jre-alpine3.9
+COPY ./target/data-extension-msg-producer-1.2-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
