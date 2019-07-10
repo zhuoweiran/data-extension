@@ -5,7 +5,19 @@ import sun.misc.BASE64Encoder;
 
 import java.io.*;
 
+/**
+ * 类{@code Base64Util}Base64加密
+ *
+ * @author Liqin
+ * @since 1.2
+ * @version 1.2
+ */
 public class Base64Util {
+    /**
+     * file encode
+     * @param file 文件
+     * @return String
+     */
     public static String file2String(File file){
         try {
             BufferedReader buffer = new BufferedReader(new FileReader(file));
@@ -26,7 +38,12 @@ public class Base64Util {
             return null;
         }
     }
-    //加密
+
+    /**
+     * 加密
+     * @param str 输入
+     * @return String
+     */
     public static String getBase64(String str){
         byte[]  b = null;
         String s = null;
@@ -41,7 +58,12 @@ public class Base64Util {
         return s;
 
     }
-    //解密
+
+    /**
+     * 解密
+     * @param str 输入
+     * @return String
+     */
     public static String getFromBase64(String str){
         byte[] b = null;
         String result = null;
@@ -56,6 +78,13 @@ public class Base64Util {
         }
         return result;
     }
+
+    /**
+     * encode 文件
+     * @param file 文件
+     * @return String
+     * @throws IOException
+     */
     public static String encode(File file) throws IOException {
         BASE64Encoder encoder = new BASE64Encoder();
         StringBuilder sb = new StringBuilder();

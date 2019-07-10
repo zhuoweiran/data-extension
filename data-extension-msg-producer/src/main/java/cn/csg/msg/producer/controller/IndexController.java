@@ -38,7 +38,7 @@ public class IndexController {
      * @param map 返回任务列表和参数列表
      * @return 跳转到/index
      */
-    @RequestMapping("/index")
+    @RequestMapping({"/","/index"})
     public String index(ModelMap map) {
         map.addAttribute("tasks",msgJobService.list());
         map.addAttribute("rules",msgRulesService.list());
