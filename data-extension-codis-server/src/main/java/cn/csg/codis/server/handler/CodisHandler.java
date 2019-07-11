@@ -50,6 +50,8 @@ public class CodisHandler {
             return Mono.just(new ResultData<>(
                     null, ResultStatus.initStatus(StatusEnum.ERROR)
             ));
+        }finally {
+            jedis.close();
         }
         return Mono.just(new ResultData<>(
                 device, ResultStatus.initStatus(StatusEnum.SUCCESS)
@@ -78,6 +80,8 @@ public class CodisHandler {
             return Mono.just(new ResultData<>(
                     null, ResultStatus.initStatus(StatusEnum.ERROR)
             ));
+        }finally {
+            jedis.close();
         }
         return Mono.just(new ResultData<>(
                 null, ResultStatus.initStatus(StatusEnum.SUCCESS)
