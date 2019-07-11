@@ -183,7 +183,13 @@ public class RoundRobinJedisPoolEx implements JedisResourcePool {
             int current = nextIdx.get();
             int next = current >= pools.size() - 1 ? 0 : current + 1;
             if (nextIdx.compareAndSet(current, next)) {
-                return pools.get(next).pool.getResource();
+                JedisPool jedisPool = pools.get(next).pool;
+                LOG.info("jedis pool:[{}],active num:[{}],idle num:[{}],waiters num:[{}]",
+                        pools.get(next).addr,
+                        jedisPool.getNumActive(),
+                        jedisPool.getNumIdle(),
+                        jedisPool.getNumWaiters());
+                return jedisPool.getResource();
             }
         }
     }
