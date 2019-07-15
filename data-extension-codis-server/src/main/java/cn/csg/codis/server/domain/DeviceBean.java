@@ -1,6 +1,6 @@
 package cn.csg.codis.server.domain;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import cn.csg.codis.server.domain.common.JedisCollectDomain;
 import lombok.Data;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Data;
  * @version 1.2
  */
 @Data
-public class DeviceBean {
+public class DeviceBean extends JedisCollectDomain {
     /**
      * 设备ID
      */
@@ -174,7 +174,6 @@ public class DeviceBean {
      */
     private String systemVersion;
 
-    @JSONField(format = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private String findtime;
 
     /**

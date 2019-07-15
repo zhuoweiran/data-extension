@@ -37,6 +37,11 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.codis.jodis</groupId>
@@ -55,6 +60,7 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.49</version>
         </dependency>
+
         <dependency>
             <groupId>cn.csg</groupId>
             <artifactId>data-extension-common</artifactId>

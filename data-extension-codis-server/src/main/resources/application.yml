@@ -25,3 +25,11 @@ jedis:
   softMinEvictableIdleTimeMillis: 5000
 logging:
   file: info.log
+redis:
+  collect:
+    device: deviceInfoGuidbd
+    devicetmp: deviceTmpInfoLidbd
+    corporation: ui_corporationbd
+    dcdDeviceIpbd: dcdDeviceIpbd
+    evilIp: EVILIP
+    evilDns: EVILDNS

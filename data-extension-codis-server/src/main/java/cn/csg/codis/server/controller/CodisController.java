@@ -1,16 +1,11 @@
 package cn.csg.codis.server.controller;
 
-import cn.csg.codis.server.domain.DeviceBean;
 import cn.csg.codis.server.handler.CodisHandler;
 import cn.csg.common.ResultData;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 类{@code CodisController}控制器
@@ -26,19 +21,21 @@ public class CodisController {
     @Autowired
     private CodisHandler codisHandler;
 
-
     /**
      * 通过guid查询device
-     * HttpMethod: Get
-     * URL: /coids/find/{guid}
+     * HttpMethod: Post
+     * URL: /coids/find/{collect}
      *
      * @param guid 唯一id的key
+     * @param collect 类型
      * @return ResultData
      */
-    @GetMapping("/find/{guid}")
-    public Mono<ResultData> findDeviceByGuid(@PathVariable(name = "guid") String guid){
+    @PostMapping("/find/{collect}")
+    public Mono<ResultData> findByGuid(
+            @PathVariable(name = "collect") String collect,
+            @RequestParam(name = "key") String guid){
 
-        return codisHandler.findByGuid(guid);
+        return codisHandler.findByGuid(collect, guid);
     }
 
     /**
@@ -46,21 +43,30 @@ public class CodisController {
      * HttpMethod: Post
      * URL: /codis/update
      *
+     * @param collect 集合名称
      * @param listStr device list json string
      * @return ResultData
      */
-    @PostMapping("/update")
-    public Mono<ResultData> updateDevices(
+    @PostMapping("/update/{collect}")
+    public Mono<ResultData> update(
+            @PathVariable(name = "collect") String collect,
             @RequestParam(name = "list") String listStr
     ){
-        List<DeviceBean> list = null;
-        if(listStr.startsWith("[")) {
-            list = JSONArray.parseArray(listStr, DeviceBean.class);
-            return codisHandler.updateDevices(list);
-        }else if(listStr.startsWith("{")){
-            list = Arrays.asList(JSONObject.parseObject(listStr, DeviceBean.class));
-        }
-        return codisHandler.updateDevices(list);
+        return codisHandler.updateDevices(collect ,listStr);
+    }
+
+    /**
+     * 删除一个key
+     * @param collect 集合名称
+     * @param key key
+     * @return ResultData
+     */
+    @PostMapping("/delete/{collect}")
+    public Mono<ResultData> deleteBykey(
+            @PathVariable(name = "collect") String collect,
+            @RequestParam(name = "key") String key
+    ){
+        return codisHandler.deleteByGuid(collect ,key);
     }
 
     /**
@@ -74,4 +80,5 @@ public class CodisController {
     public Mono<ResultData> showStatus(){
         return codisHandler.showStatus();
     }
+
 }
