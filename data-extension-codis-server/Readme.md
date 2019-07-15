@@ -11,7 +11,7 @@
   - key:
     - type: String
  
-## 更新新增接口
+## 更新或新增接口
 
 - Http Method:Post
 - Url:/codis/update/{collect}
@@ -36,7 +36,7 @@
    - key:
      - type: String
      
-## collect 的取值
+## collect 的取值解释
 - corporation: 组织机构
 - device: 已知资产
 - devicetmp: 未知资产
