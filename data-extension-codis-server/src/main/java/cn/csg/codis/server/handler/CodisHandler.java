@@ -129,22 +129,16 @@ public class CodisHandler {
     /**
      * 更新device 列表
      * @param collectName 集合名称
-     * @param listStr json string
+     * @param array json string
      * @return ResultData
      */
-    public Mono<ResultData> updateDevices(String collectName, String listStr){
+    public Mono<ResultData> updateDevices(String collectName, JSONArray array){
         Jedis jedis = null;
         try {
             jedis = jedisResourcePool.getResource();
-            if (listStr.startsWith("{")) {
-                JSONObject jsonObject = JSON.parseObject(listStr);
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
                 updateKV(jedis, collectName, jsonObject);
-            } else {
-                JSONArray array = JSONArray.parseArray(listStr);
-                for (int i = 0; i < array.size(); i++) {
-                    JSONObject jsonObject = array.getJSONObject(i);
-                    updateKV(jedis, collectName, jsonObject);
-                }
             }
         }catch (Exception e){
             jedis.close();

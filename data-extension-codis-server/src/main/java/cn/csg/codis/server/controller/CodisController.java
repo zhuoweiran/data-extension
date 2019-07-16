@@ -2,6 +2,9 @@ package cn.csg.codis.server.controller;
 
 import cn.csg.codis.server.handler.CodisHandler;
 import cn.csg.common.ResultData;
+import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -17,6 +20,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/codis")
 public class CodisController {
+    private static final Logger logger = LoggerFactory.getLogger(CodisController.class);
 
     @Autowired
     private CodisHandler codisHandler;
@@ -26,16 +30,16 @@ public class CodisController {
      * HttpMethod: Post
      * URL: /coids/find/{collect}
      *
-     * @param guid 唯一id的key
+     * @param request 唯一id的key
      * @param collect 类型
      * @return ResultData
      */
     @PostMapping("/find/{collect}")
     public Mono<ResultData> findByGuid(
             @PathVariable(name = "collect") String collect,
-            @RequestParam(name = "key") String guid){
-
-        return codisHandler.findByGuid(collect, guid);
+            @RequestBody JSONObject request){
+        logger.info("查询[{}],key=[{}]", collect, request.getString("key"));
+        return codisHandler.findByGuid(collect, request.getString("key"));
     }
 
     /**
@@ -44,29 +48,32 @@ public class CodisController {
      * URL: /codis/update
      *
      * @param collect 集合名称
-     * @param listStr device list json string
+     * @param request device list json string
      * @return ResultData
      */
     @PostMapping("/update/{collect}")
     public Mono<ResultData> update(
             @PathVariable(name = "collect") String collect,
-            @RequestParam(name = "list") String listStr
+            @RequestBody JSONObject request
     ){
-        return codisHandler.updateDevices(collect ,listStr);
+        logger.info("更新[{}]", collect);
+        return codisHandler.updateDevices(collect ,request.getJSONArray("list"));
     }
+
 
     /**
      * 删除一个key
      * @param collect 集合名称
-     * @param key key
+     * @param request key
      * @return ResultData
      */
     @PostMapping("/delete/{collect}")
     public Mono<ResultData> deleteBykey(
             @PathVariable(name = "collect") String collect,
-            @RequestParam(name = "key") String key
+            @RequestBody JSONObject request
     ){
-        return codisHandler.deleteByGuid(collect ,key);
+        logger.info("删除[{}],key=[{}]", collect, request.getString("key"));
+        return codisHandler.deleteByGuid(collect ,request.getString("key"));
     }
 
     /**
