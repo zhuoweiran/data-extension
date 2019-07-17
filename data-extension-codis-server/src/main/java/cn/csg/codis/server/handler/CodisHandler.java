@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Component
 public class CodisHandler {
-    private static Logger logger = LoggerFactory.getLogger(CodisHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(CodisHandler.class);
 
     @Autowired
     private JedisResourcePool jedisResourcePool;
@@ -68,7 +68,7 @@ public class CodisHandler {
             }
         }catch (Exception e) {
             jedis.close();
-            logger.error("查询失败");
+            logger.error("查询失败,collect:[{}],guid[{}]", collectName, guid);
             e.printStackTrace();
             return Mono.just(new ResultData<>(
                     null, ResultStatus.initStatus(StatusEnum.ERROR)
@@ -113,7 +113,7 @@ public class CodisHandler {
             }
         }catch (Exception e) {
             jedis.close();
-            logger.error("删除资产失败");
+            logger.error("删除资产失败,collect:[{}],guid[{}]", collectName, guid);
             e.printStackTrace();
             return Mono.just(new ResultData<>(
                     guid, ResultStatus.initStatus(StatusEnum.DELETE_FAIL)
@@ -143,7 +143,7 @@ public class CodisHandler {
         }catch (Exception e){
             jedis.close();
             e.printStackTrace();
-            logger.error("更新资产失败");
+            logger.error("更新资产失败,collect:[{}],array:[{}]", collectName, array.toJSONString());
             return Mono.just(new ResultData<>(
                     "更新资产失败", ResultStatus.initStatus(StatusEnum.UPDATE_FAIL)
             ));
